@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blogs - GamePulse | Gaming Insights</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .blogs-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .create-blog-btn {
+            display: none;
+        }
+
+        .blogs-filter {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            background: var(--bg-secondary);
+            border: 1px solid #333;
+            border-radius: 6px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .filter-btn.active {
+            background: var(--accent-primary);
+            color: var(--bg-primary);
+        }
+
+        .blogs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .blog-card {
+            background: var(--bg-secondary);
+            border-radius: var(--border-radius);
+            border: 1px solid #333;
+            overflow: hidden;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .blog-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-primary);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .blog-card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #333;
+        }
+
+        .blog-category {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .blog-card-body {
+            padding: 1.5rem;
+        }
+
+        .blog-stats {
+            display: flex;
+            gap: 1rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+
+        .author-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #333;
+        }
+
+        .author-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--accent-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: var(--bg-primary);
+        }
+    </style>
+</head>
+<body>
+    <!-- Progress Bar -->
+    <div class="progress-bar"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo" data-glitch onclick="location.href='index.html'">GAMEPULSE</div>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="dashboard.html" class="nav-link">Dashboard</a>
+                <a href="games.html" class="nav-link">My Games</a>
+                <a href="blogs.html" class="nav-link active">Blogs</a>
+                <a href="profile.html" class="nav-link">Profile</a>
+                <!-- Dynamic links based on role -->
+                <span id="roleLinks"></span>
+            </div>
+            <button class="btn primary" onclick="location.href='#create-blog'">Write Blog</button>
+        </div>
+    </nav>
+
+    <!-- Blogs Header -->
+    <section class="hero mini-hero">
+        <div class="hero-container">
+            <h1 class="hero-title">Gaming Blogs & Insights</h1>
+            <p class="hero-subtitle">Discover stories, guides, and perspectives from the gaming community</p>
+        </div>
+    </section>
+
+    <!-- Blog Content -->
+    <section class="blog-content">
+        <div class="container">
+            <div class="blogs-header">
+                <h2 class="section-title">Latest Posts</h2>
+                <button class="btn primary create-blog-btn" onclick="location.href='create-blog.html'">Write New Blog</button>
+            </div>
+
+            <div class="blogs-filter">
+                <button class="filter-btn active" onclick="filterBlogs('all')">All Posts</button>
+                <button class="filter-btn" onclick="filterBlogs('education')">Education</button>
+                <button class="filter-btn" onclick="filterBlogs('safety')">Safety</button>
+                <button class="filter-btn" onclick="filterBlogs('parenting')">Parenting</button>
+                <button class="filter-btn" onclick="filterBlogs('creativity')">Creativity</button>
+            </div>
+
+            <div class="blogs-grid" id="blogsGrid">
+                <!-- Blog posts will be loaded here -->
+            </div>
+
+            <!-- Original Blog Articles (Fallback) -->
+            <article id="roblox-good" class="blog-article">
+                <div class="blog-header">
+                    <span class="blog-category positive">Positive Impact</span>
+                    <h2>The Bright Side: How Roblox Empowers Young Minds</h2>
+                    <div class="blog-meta">By Alex Chen • January 15, 2024 • 5 min read</div>
+                </div>
+                
+                <div class="blog-body">
+                    <h3>🎨 Creativity Unleashed</h3>
+                    <p>Roblox isn't just a game - it's a creation platform. With Roblox Studio, kids learn:</p>
+                    <ul>
+                        <li><strong>3D Modeling:</strong> Building virtual worlds from scratch</li>
+                        <li><strong>Basic Coding:</strong> Lua scripting introduces programming concepts</li>
+                        <li><strong>Game Design:</strong> Understanding game mechanics and user experience</li>
+                    </ul>
+
+                    <h3>💼 Young Entrepreneurs</h3>
+                    <p>Did you know some teens earn real money through Roblox?</p>
+                    <div class="stat-box">
+                        <p>"Over 300 developers earned $100,000+ in 2022 through Roblox"</p>
+                    </div>
+                    <p>They learn:</p>
+                    <ul>
+                        <li>Digital marketing skills</li>
+                        <li>Customer service understanding</li>
+                        <li>Financial literacy basics</li>
+                    </ul>
+
+                    <h3>🤝 Social Skills Development</h3>
+                    <p>When used responsibly, Roblox can help develop:</p>
+                    <ul>
+                        <li>Teamwork and collaboration</li>
+                        <li>Problem-solving abilities</li>
+                        <li>Digital communication skills</li>
+                    </ul>
+                </div>
+            </article>
+
+            <article id="roblox-bad" class="blog-article">
+                <div class="blog-header">
+                    <span class="blog-category warning">Safety Guide</span>
+                    <h2>Understanding the Concerns: Roblox Safety Guide</h2>
+                    <div class="blog-meta">By Maria Gonzalez • January 12, 2024 • 6 min read</div>
+                </div>
+                
+                <div class="blog-body">
+                    <h3>🛡️ Online Safety First</h3>
+                    <p>While Roblox has many benefits, parents should be aware of:</p>
+                    
+                    <h4>Privacy Concerns</h4>
+                    <ul>
+                        <li>Chat features can expose kids to strangers</li>
+                        <li>In-game purchases need monitoring</li>
+                        <li>Personal information protection is crucial</li>
+                    </ul>
+
+                    <h4>Screen Time Management</h4>
+                    <p>Recommended limits by age:</p>
+                    <div class="age-limits">
+                        <div class="age-limit-card">
+                            <h5>6-12 years</h5>
+                            <p>1-2 hours daily</p>
+                        </div>
+                        <div class="age-limit-card">
+                            <h5>13-17 years</h5>
+                            <p>2-3 hours daily</p>
+                        </div>
+                    </div>
+
+                    <h3>🔧 Parental Controls</h3>
+                    <p>Essential settings every parent should enable:</p>
+                    <ul>
+                        <li><strong>Account Restrictions:</strong> Limit chat and game types</li>
+                        <li><strong>Privacy Settings:</strong> Control who can message your child</li>
+                        <li><strong>Monthly Spending Limits:</strong> Prevent unexpected purchases</li>
+                    </ul>
+                </div>
+            </article>
+
+            <article id="parent-guide" class="blog-article">
+                <div class="blog-header">
+                    <span class="blog-category guide">Parent Guide</span>
+                    <h2>The Ultimate Parent's Guide to Roblox</h2>
+                    <div class="blog-meta">By Dr. Sarah Johnson • January 10, 2024 • 4 min read</div>
+                </div>
+                
+                <div class="blog-body">
+                    <h3>👪 Getting Involved</h3>
+                    <p>The best approach? Play together!</p>
+                    <ul>
+                        <li>Ask your child to teach you their favorite game</li>
+                        <li>Discuss the games they play and why they enjoy them</li>
+                        <li>Set clear rules and time limits together</li>
+                    </ul>
+
+                    <h3>💬 Conversation Starters</h3>
+                    <p>Instead of "stop playing," try asking:</p>
+                    <div class="conversation-tips">
+                        <p>"Can you show me what you built today?"</p>
+                        <p>"What did you learn while playing?"</p>
+                        <p>"How do you stay safe while talking to others?"</p>
+                    </div>
+
+                    <h3>✅ Balanced Approach</h3>
+                    <p>Remember: gaming is one of many activities. Encourage:</p>
+                    <ul>
+                        <li>Outdoor play and physical activity</li>
+                        <li>Reading and creative hobbies</li>
+                        <li>Family time without screens</li>
+                    </ul>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>GamePulse</h4>
+                    <p>Empowering youth through responsible gaming education and community building.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <a href="index.html">Home</a>
+                    <a href="dashboard.html">Dashboard</a>
+                    <a href="games.html">My Games</a>
+                    <a href="blogs.html">Blogs</a>
+                    <a href="profile.html">Profile</a>
+                </div>
+            </div>
+            <p>&copy; 2024 GamePulse. Educational content about gaming.</p>
+        </div>
+    </footer>
+
+    <script src="scripts/script.js"></script>
+    <script>
+        // Check if user can create blogs
+        const currentUser = JSON.parse(localStorage.getItem('user')) || JSON.parse(localStorage.getItem('demoUser'));
+        if (currentUser && (currentUser.role === 'admin' || currentUser.role === 'content-creator' || currentUser.role === 'youth-mentor' || currentUser.role === 'owner')) {
+            document.querySelector('.create-blog-btn').style.display = 'block';
+        }
+
+        function loadBlogs() {
+            const blogPosts = JSON.parse(localStorage.getItem('blogPosts') || '[]');
+            const blogsGrid = document.getElementById('blogsGrid');
+            
+            if (blogPosts.length === 0) {
+                // Show original content if no custom blogs
+                return;
+            }
+            
+            blogsGrid.innerHTML = blogPosts.map(blog => `
+                <div class="blog-card" onclick="viewBlog(${blog.id})">
+                    <div class="blog-card-header">
+                        <span class="blog-category ${getCategoryClass(blog.category)}">${formatCategory(blog.category)}</span>
+                        <h3>${blog.title}</h3>
+                    </div>
+                    <div class="blog-card-body">
+                        <p>${blog.content.substring(0, 150)}...</p>
+                        <div class="blog-stats">
+                            <span>👁️ ${blog.views || 0} views</span>
+                            <span>❤️ ${blog.likes || 0} likes</span>
+                            <span>💬 ${blog.comments ? blog.comments.length : 0} comments</span>
+                        </div>
+                        <div class="author-info">
+                            <div class="author-avatar">${getInitials(blog.authorName)}</div>
+                            <div>
+                                <strong>${blog.authorName}</strong>
+                                <div style="font-size: 0.8rem; color: var(--text-secondary);">${formatRole(blog.authorRole)}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getCategoryClass(category) {
+            const classes = {
+                'education': 'positive',
+                'safety': 'warning',
+                'parenting': 'guide',
+                'creativity': 'positive',
+                'coding': 'positive',
+                'community': 'positive'
+            };
+            return classes[category] || 'positive';
+        }
+
+        function formatCategory(category) {
+            const categories = {
+                'education': 'Education',
+                'safety': 'Safety',
+                'parenting': 'Parent Guide',
+                'creativity': 'Creativity',
+                'coding': 'Coding',
+                'community': 'Community'
+            };
+            return categories[category] || category;
+        }
+
+        function getInitials(name) {
+            return name.split(' ').map(n => n[0]).join('').toUpperCase();
+        }
+
+        function formatRole(role) {
+            const roles = {
+                'gamer': 'Gamer',
+                'content-creator': 'Content Creator',
+                'youth-mentor': 'Youth Mentor',
+                'admin': 'Admin',
+                'owner': 'Owner'
+            };
+            return roles[role] || role;
+        }
+
+        function viewBlog(blogId) {
+            // For now, just show an alert. In a real app, you'd navigate to a blog detail page.
+            alert('Blog detail view would open here! In a full implementation, this would show the complete blog post.');
+        }
+
+        function filterBlogs(category) {
+            // Update active filter button
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Filter logic would go here
+            console.log('Filtering by:', category);
+        }
+
+        // Update navigation based on user role
+        function updateNavigation() {
+            const roleLinks = document.getElementById('roleLinks');
+            if (currentUser && (currentUser.role === 'admin' || currentUser.role === 'owner')) {
+                roleLinks.innerHTML = '<a href="admin.html" class="nav-link">Admin Panel</a>';
+            } else if (currentUser && ['content-creator', 'youth-mentor'].includes(currentUser.role)) {
+                roleLinks.innerHTML = '<a href="create-blog.html" class="nav-link">Create Blog</a>';
+            }
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadBlogs();
+            updateNavigation();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - GamePulse</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .profile-container {
+            padding: 100px 20px 50px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            background: var(--bg-secondary);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            border: 1px solid #333;
+        }
+        
+        .avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: var(--accent-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: var(--bg-primary);
+            font-weight: bold;
+        }
+        
+        .profile-info h1 {
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .role-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+        
+        .role-gamer {
+            background: #00ff88;
+            color: var(--bg-primary);
+        }
+        
+        .role-content-creator {
+            background: #0088ff;
+            color: white;
+        }
+        
+        .role-youth-mentor {
+            background: #ff0080;
+            color: white;
+        }
+        
+        .role-admin {
+            background: #ffaa00;
+            color: var(--bg-primary);
+        }
+        
+        .role-owner {
+            background: #aa00ff;
+            color: white;
+        }
+        
+        .profile-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: var(--bg-secondary);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            border: 1px solid #333;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .profile-actions {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .logout-btn {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        
+        .permissions-list {
+            margin-top: 1rem;
+        }
+        
+        .permissions-list ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .permissions-list li {
+            padding: 0.5rem 0;
+            color: var(--text-secondary);
+            border-bottom: 1px solid #333;
+        }
+        
+        .permissions-list li:before {
+            content: "✓ ";
+            color: var(--accent-primary);
+            font-weight: bold;
+        }
+
+        .gaming-stats {
+            background: var(--bg-secondary);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            border: 1px solid #333;
+            margin-bottom: 2rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo" data-glitch onclick="location.href='index.html'">GAMEPULSE</div>
+            <div class="nav-menu">
+                <a href="dashboard.html" class="nav-link">Dashboard</a>
+                <a href="games.html" class="nav-link">My Games</a>
+                <a href="blogs.html" class="nav-link">Blogs</a>
+                <a href="profile.html" class="nav-link active">My Profile</a>
+                <!-- Dynamic links based on role -->
+                <span id="roleLinks"></span>
+            </div>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </nav>
+
+    <div class="profile-container">
+        <div class="profile-header">
+            <div class="avatar" id="userAvatar">
+                <!-- Avatar will be generated from initials -->
+            </div>
+            <div class="profile-info">
+                <h1 id="userName">Loading...</h1>
+                <p id="userEmail" style="color: var(--text-secondary);">Loading...</p>
+                <div id="userRole" class="role-badge">Loading...</div>
+            </div>
+        </div>
+        
+        <!-- Gaming Statistics -->
+        <div class="gaming-stats">
+            <h2>🎮 Gaming Statistics</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalGames">0</div>
+                    <div>Total Games</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalPlaytime">0h</div>
+                    <div>Total Playtime</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="completedGames">0</div>
+                    <div>Completed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="favoriteGenre">-</div>
+                    <div>Favorite Genre</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="profile-stats">
+            <div class="stat-card">
+                <div class="stat-number" id="memberSince">-</div>
+                <div>Member Since</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="blogCount">0</div>
+                <div>Blog Posts</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="commentsCount">0</div>
+                <div>Comments</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="accountType">User</div>
+                <div>Account Type</div>
+            </div>
+        </div>
+        
+        <div class="profile-actions">
+            <button class="btn primary" onclick="editProfile()">Edit Profile</button>
+            <button class="btn secondary" onclick="showPWAInstall()">📱 Install App</button>
+            <button class="btn outline" onclick="location.href='dashboard.html'">📊 View Dashboard</button>
+            <button class="btn outline" onclick="location.href='games.html'">🎮 My Games</button>
+        </div>
+
+        <!-- Permissions Section -->
+        <div class="gaming-stats">
+            <h2>🔑 Your Permissions</h2>
+            <div class="permissions-list">
+                <ul id="permissionsList">
+                    <!-- Permissions will be loaded here -->
+                </ul>
+            </div>
+        </div>
+
+        <!-- Account Management -->
+        <div class="gaming-stats">
+            <h2>⚙️ Account Management</h2>
+            <div class="profile-actions">
+                <button class="btn outline" onclick="exportData()">📤 Export My Data</button>
+                <button class="btn outline" onclick="clearData()">🗑️ Clear Local Data</button>
+                <button class="btn outline" onclick="showSupport()">💬 Get Help</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="scripts/script.js"></script>
+    <script>
+        // Check authentication
+        const currentUser = JSON.parse(localStorage.getItem('user')) || JSON.parse(localStorage.getItem('demoUser'));
+        if (!currentUser) {
+            window.location.href = 'login.html';
+        }
+
+        function loadProfile() {
+            // Load user data
+            document.getElementById('userName').textContent = currentUser.name;
+            document.getElementById('userEmail').textContent = currentUser.email;
+            
+            // Set avatar initials
+            const initials = currentUser.name.split(' ').map(n => n[0]).join('').toUpperCase();
+            document.getElementById('userAvatar').textContent = initials;
+            
+            // Set role badge
+            const roleElement = document.getElementById('userRole');
+            roleElement.textContent = formatRole(currentUser.role);
+            roleElement.className = `role-badge role-${currentUser.role}`;
+            
+            // Load member since date
+            const joinDate = new Date(currentUser.joinDate);
+            document.getElementById('memberSince').textContent = joinDate.toLocaleDateString();
+            
+            // Load account type
+            document.getElementById('accountType').textContent = formatRole(currentUser.role);
+            
+            // Load blog stats
+            const blogPosts = JSON.parse(localStorage.getItem('blogPosts') || '[]');
+            const userBlogs = blogPosts.filter(post => post.authorId === currentUser.id);
+            document.getElementById('blogCount').textContent = userBlogs.length;
+            
+            // Load comment stats (placeholder)
+            document.getElementById('commentsCount').textContent = '0';
+            
+            // Load gaming statistics
+            loadGamingStats();
+            
+            // Load permissions
+            loadPermissions();
+            
+            // Update navigation
+            updateNavigation();
+        }
+
+        function loadGamingStats() {
+            const userGames = JSON.parse(localStorage.getItem('userGames') || '[]');
+            const gamingStats = getGamingStats();
+            
+            document.getElementById('totalGames').textContent = gamingStats.totalGames;
+            document.getElementById('totalPlaytime').textContent = gamingStats.totalPlaytime + 'h';
+            document.getElementById('completedGames').textContent = gamingStats.completedGames;
+            document.getElementById('favoriteGenre').textContent = gamingStats.favoriteGenre;
+        }
+
+        function loadPermissions() {
+            const permissions = getRolePermissions(currentUser.role);
+            const permissionsList = document.getElementById('permissionsList');
+            
+            permissionsList.innerHTML = permissions.map(permission => 
+                `<li>${formatPermission(permission)}</li>`
+            ).join('');
+        }
+
+        function formatPermission(permission) {
+            const permissionMap = {
+                'read_blogs': 'Read blog posts',
+                'join_community': 'Join community discussions',
+                'comment': 'Comment on content',
+                'like_content': 'Like and react to content',
+                'create_blogs': 'Create blog posts',
+                'edit_own_blogs': 'Edit your own blog posts',
+                'delete_own_blogs': 'Delete your own blog posts',
+                'moderate_comments': 'Moderate community comments',
+                'host_workshops': 'Host workshops and events',
+                'mentor_users': 'Mentor other users',
+                'manage_users': 'Manage user accounts',
+                'manage_content': 'Manage all content',
+                'manage_roles': 'Manage user roles',
+                'all': 'Full system access',
+                'assign_roles': 'Assign roles to users',
+                'manage_owners': 'Manage owner accounts',
+                'system_control': 'Full system control'
+            };
+            
+            return permissionMap[permission] || permission;
+        }
+
+        function editProfile() {
+            const newName = prompt('Enter your new name:', currentUser.name);
+            if (newName && newName.trim() !== '') {
+                // Update user in localStorage
+                const users = JSON.parse(localStorage.getItem('users') || '[]');
+                const userIndex = users.findIndex(u => u.id === currentUser.id);
+                
+                if (userIndex !== -1) {
+                    users[userIndex].name = newName.trim();
+                    localStorage.setItem('users', JSON.stringify(users));
+                    
+                    // Update current user session
+                    currentUser.name = newName.trim();
+                    localStorage.setItem('user', JSON.stringify(currentUser));
+                    
+                    // Reload profile
+                    loadProfile();
+                    alert('Profile updated successfully!');
+                }
+            }
+        }
+
+        function showPWAInstall() {
+            if (window.gamePulsePWA) {
+                window.gamePulsePWA.installApp();
+            } else {
+                alert('📱 PWA Installation\n\nTo install GamePulse as an app:\n\nChrome/Edge: Click the install button (📥) in the address bar\nSafari: Tap Share → Add to Home Screen\nFirefox: Menu → Install\n\nOr look for the "Install GamePulse" button that appears on the homepage!');
+            }
+        }
+
+        function exportData() {
+            const userData = {
+                profile: currentUser,
+                games: JSON.parse(localStorage.getItem('userGames') || '[]'),
+                activity: JSON.parse(localStorage.getItem('gamingActivity') || '[]'),
+                blogs: JSON.parse(localStorage.getItem('blogPosts') || '[]').filter(post => post.authorId === currentUser.id)
+            };
+            
+            const dataStr = JSON.stringify(userData, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `gamepulse-data-${currentUser.name}-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            
+            alert('Your data has been exported successfully!');
+        }
+
+        function clearData() {
+            if (confirm('⚠️ Clear All Local Data?\n\nThis will remove all your games, activity, and preferences from this browser. Your account will remain, but you\'ll start fresh.\n\nThis cannot be undone!')) {
+                localStorage.removeItem('userGames');
+                localStorage.removeItem('gamingActivity');
+                alert('Local data cleared! Refreshing...');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            }
+        }
+
+        function showSupport() {
+            alert('💬 GamePulse Support\n\nNeed help? Contact us:\n\n📧 Email: aterrealms@gmail.com\n🎮 Issues: Use the feedback system\n📚 Guides: Check our blog section\n\nWe\'re here to help you!');
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('user');
+                localStorage.removeItem('demoUser');
+                window.location.href = 'login.html';
+            }
+        }
+
+        function updateNavigation() {
+            const roleLinks = document.getElementById('roleLinks');
+            if (currentUser.role === 'admin' || currentUser.role === 'owner') {
+                roleLinks.innerHTML = '<a href="admin.html" class="nav-link">Admin Panel</a>';
+            } else if (['content-creator', 'youth-mentor'].includes(currentUser.role)) {
+                roleLinks.innerHTML = '<a href="create-blog.html" class="nav-link">Create Blog</a>';
+            }
+        }
+
+        // Format role for display
+        function formatRole(role) {
+            const roles = {
+                'gamer': 'Gamer',
+                'content-creator': 'Content Creator',
+                'youth-mentor': 'Youth Mentor',
+                'admin': 'Admin',
+                'owner': 'Owner'
+            };
+            return roles[role] || role;
+        }
+
+        // Get gaming stats
+        function getGamingStats() {
+            const userGames = JSON.parse(localStorage.getItem('userGames') || '[]');
+            const totalPlaytime = userGames.reduce((total, game) => total + (game.playtime || 0), 0);
+            const completedGames = userGames.filter(game => game.status === 'completed').length;
+            
+            // Calculate favorite genre
+            const genreCount = {};
+            userGames.forEach(game => {
+                genreCount[game.genre] = (genreCount[game.genre] || 0) + 1;
+            });
+            const favoriteGenre = Object.keys(genreCount).reduce((a, b) => 
+                genreCount[a] > genreCount[b] ? a : b, 'None'
+            );
+            
+            return {
+                totalPlaytime,
+                totalGames: userGames.length,
+                completedGames,
+                favoriteGenre
+            };
+        }
+
+        // Get role permissions
+        function getRolePermissions(role) {
+            const permissions = {
+                'gamer': ['read_blogs', 'join_community', 'comment', 'like_content'],
+                'content-creator': ['read_blogs', 'join_community', 'comment', 'like_content', 'create_blogs', 'edit_own_blogs', 'delete_own_blogs'],
+                'youth-mentor': ['read_blogs', 'join_community', 'comment', 'like_content', 'create_blogs', 'edit_own_blogs', 'delete_own_blogs', 'moderate_comments', 'host_workshops', 'mentor_users'],
+                'admin': ['all', 'manage_users', 'manage_content', 'manage_roles'],
+                'owner': ['all', 'assign_roles', 'manage_owners', 'manage_users', 'manage_content', 'system_control']
+            };
+            return permissions[role] || permissions['gamer'];
+        }
+
+        // Initialize profile
+        document.addEventListener('DOMContentLoaded', loadProfile);
+    </script>
+</body>
+</html>

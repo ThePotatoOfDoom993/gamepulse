@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - GamePulse</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .admin-container {
+            padding: 100px 20px 50px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .admin-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: var(--bg-secondary);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            border: 1px solid #333;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent-primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .admin-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #333;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            padding: 1rem 2rem;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+        }
+        
+        .tab.active {
+            color: var(--accent-primary);
+            border-bottom-color: var(--accent-primary);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .user-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-secondary);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+        
+        .user-table th, .user-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #333;
+        }
+        
+        .user-table th {
+            background: var(--bg-primary);
+            color: var(--accent-primary);
+        }
+        
+        .action-btn {
+            padding: 0.5rem 1rem;
+            margin: 0 0.25rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        
+        .btn-edit {
+            background: var(--accent-secondary);
+            color: white;
+        }
+        
+        .btn-delete {
+            background: #ff4444;
+            color: white;
+        }
+        
+        .logout-btn {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .role-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .role-gamer {
+            background: #00ff88;
+            color: var(--bg-primary);
+        }
+        
+        .role-content-creator {
+            background: #0088ff;
+            color: white;
+        }
+        
+        .role-youth-mentor {
+            background: #ff0080;
+            color: white;
+        }
+        
+        .role-admin {
+            background: #ffaa00;
+            color: var(--bg-primary);
+        }
+        
+        .role-owner {
+            background: #aa00ff;
+            color: white;
+        }
+        
+        .owner-section {
+            background: var(--bg-secondary);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            border: 1px solid #333;
+            margin-bottom: 2rem;
+        }
+
+        .system-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .system-action-card {
+            background: var(--bg-secondary);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            border: 1px solid #333;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo" data-glitch onclick="location.href='index.html'">GAMEPULSE ADMIN</div>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="admin.html" class="nav-link active">Admin Panel</a>
+                <a href="blogs.html" class="nav-link">Blogs</a>
+                <a href="create-blog.html" class="nav-link">Create Blog</a>
+                <a href="dashboard.html" class="nav-link">Dashboard</a>
+            </div>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </nav>
+
+    <div class="admin-container">
+        <div class="admin-header">
+            <h1 class="section-title">Admin Panel</h1>
+            <div id="userRoleBadge" class="role-badge role-owner">Owner</div>
+        </div>
+        
+        <div class="admin-stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalUsers">0</div>
+                <div>Total Users</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="adminsCount">0</div>
+                <div>Admins</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="contentCreators">0</div>
+                <div>Content Creators</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="youthMentors">0</div>
+                <div>Youth Mentors</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalBlogs">0</div>
+                <div>Blog Posts</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalGames">0</div>
+                <div>Games Tracked</div>
+            </div>
+        </div>
+        
+        <!-- Owner Tools Section -->
+        <div class="owner-section" id="ownerSection">
+            <h2>👑 Owner Tools</h2>
+            <div class="form-group">
+                <label for="userSelect">Select User to Make Admin:</label>
+                <select id="userSelect">
+                    <option value="">Select a user</option>
+                </select>
+                <button class="btn primary" onclick="makeAdmin()" style="margin-top: 1rem;">Make Admin</button>
+            </div>
+
+            <div class="system-actions">
+                <div class="system-action-card">
+                    <h3>🔄 System Reset</h3>
+                    <p>Reset all data to default state</p>
+                    <button class="btn outline" onclick="resetSystem()" style="margin-top: 1rem;">Reset System</button>
+                </div>
+                <div class="system-action-card">
+                    <h3>📊 Export Data</h3>
+                    <p>Export all system data as JSON</p>
+                    <button class="btn outline" onclick="exportAllData()" style="margin-top: 1rem;">Export Data</button>
+                </div>
+                <div class="system-action-card">
+                    <h3>🧹 Cleanup</h3>
+                    <p>Remove demo and temporary data</p>
+                    <button class="btn outline" onclick="cleanupData()" style="margin-top: 1rem;">Cleanup</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="admin-tabs">
+            <button class="tab active" onclick="openTab('users')">User Management</button>
+            <button class="tab" onclick="openTab('roles')">Role Management</button>
+            <button class="tab" onclick="openTab('content')">Content Management</button>
+            <button class="tab" onclick="openTab('system')">System Info</button>
+        </div>
+        
+        <!-- Users Tab -->
+        <div id="users" class="tab-content active">
+            <h2>User Management</h2>
+            <table class="user-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Join Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="usersTable">
+                    <!-- Users will be populated here -->
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Roles Tab -->
+        <div id="roles" class="tab-content">
+            <h2>Role Management</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+                <div class="feature-card">
+                    <h3>🎮 Gamer</h3>
+                    <p><strong>Permissions:</strong> Read blogs, join community, comment, like content</p>
+                    <p><strong>Users:</strong> <span id="gamerCount">0</span></p>
+                </div>
+                <div class="feature-card">
+                    <h3>📝 Content Creator</h3>
+                    <p><strong>Permissions:</strong> Create blogs, edit own content, submit posts</p>
+                    <p><strong>Users:</strong> <span id="creatorCount">0</span></p>
+                </div>
+                <div class="feature-card">
+                    <h3>🌟 Youth Mentor</h3>
+                    <p><strong>Permissions:</strong> Moderate comments, host workshops, mentor users</p>
+                    <p><strong>Users:</strong> <span id="mentorCount">0</span></p>
+                </div>
+                <div class="feature-card">
+                    <h3>🛡️ Admin</h3>
+                    <p><strong>Permissions:</strong> Manage users, moderate content, assign roles</p>
+                    <p><strong>Users:</strong> <span id="adminCount">0</span></p>
+                </div>
+                <div class="feature-card">
+                    <h3>👑 Owner</h3>
+                    <p><strong>Permissions:</strong> Full system control, assign admins</p>
+                    <p><strong>Users:</strong> <span id="ownerCount">1</span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Management Tab -->
+        <div id="content" class="tab-content">
+            <h2>Content Management</h2>
+            <div class="admin-stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="publishedBlogs">0</div>
+                    <div>Published Blogs</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="pendingBlogs">0</div>
+                    <div>Pending Blogs</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalComments">0</div>
+                    <div>Total Comments</div>
+                </div>
+            </div>
+            
+            <h3 style="margin-top: 2rem;">Recent Blog Posts</h3>
+            <table class="user-table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Author</th>
+                        <th>Category</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="blogsTable">
+                    <!-- Blogs will be populated here -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- System Info Tab -->
+        <div id="system" class="tab-content">
+            <h2>System Information</h2>
+            <div class="feature-card">
+                <h3>📊 Platform Stats</h3>
+                <div id="systemStats">
+                    <!-- System stats will be populated here -->
+                </div>
+            </div>
+            
+            <div class="feature-card" style="margin-top: 2rem;">
+                <h3>🔧 Technical Information</h3>
+                <div id="techInfo">
+                    <!-- Technical info will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check authentication - only owners and admins can access
+        const currentUser = JSON.parse(localStorage.getItem('user'));
+        if (!currentUser || (currentUser.role !== 'admin' && currentUser.role !== 'owner')) {
+            window.location.href = 'login.html';
+        }
+
+        // Update role badge
+        document.getElementById('userRoleBadge').textContent = currentUser.role === 'owner' ? 'Owner' : 'Admin';
+        document.getElementById('userRoleBadge').className = `role-badge role-${currentUser.role}`;
+
+        // Hide owner section if not owner
+        if (currentUser.role !== 'owner') {
+            document.getElementById('ownerSection').style.display = 'none';
+        }
+
+        function loadUsers() {
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            const blogPosts = JSON.parse(localStorage.getItem('blogPosts') || '[]');
+            const userGames = JSON.parse(localStorage.getItem('userGames') || '[]');
+            const table = document.getElementById('usersTable');
+            const userSelect = document.getElementById('userSelect');
+            
+            // Update stats
+            document.getElementById('totalUsers').textContent = users.length;
+            document.getElementById('adminsCount').textContent = users.filter(u => u.role === 'admin').length;
+            document.getElementById('contentCreators').textContent = users.filter(u => u.role === 'content-creator').length;
+            document.getElementById('youthMentors').textContent = users.filter(u => u.role === 'youth-mentor').length;
+            document.getElementById('totalBlogs').textContent = blogPosts.length;
+            document.getElementById('totalGames').textContent = userGames.length;
+            
+            // Role counts
+            document.getElementById('gamerCount').textContent = users.filter(u => u.role === 'gamer').length;
+            document.getElementById('creatorCount').textContent = users.filter(u => u.role === 'content-creator').length;
+            document.getElementById('mentorCount').textContent = users.filter(u => u.role === 'youth-mentor').length;
+            document.getElementById('adminCount').textContent = users.filter(u => u.role === 'admin').length;
+            document.getElementById('ownerCount').textContent = users.filter(u => u.role === 'owner').length;
+            
+            // Populate users table
+            table.innerHTML = '';
+            userSelect.innerHTML = '<option value="">Select a user</option>';
+            
+            users.forEach(user => {
+                // Add to table
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${user.id}</td>
+                    <td>${user.name} ${user.role === 'owner' ? '👑' : ''}</td>
+                    <td>${user.email}</td>
+                    <td><span class="role-badge role-${user.role}">${formatRole(user.role)}</span></td>
+                    <td>${new Date(user.joinDate).toLocaleDateString()}</td>
+                    <td>
+                        ${currentUser.role === 'owner' && user.role !== 'owner' ? `
+                            <button class="action-btn btn-edit" onclick="editUserRole(${user.id})">Edit Role</button>
+                            <button class="action-btn btn-delete" onclick="deleteUser(${user.id})">Delete</button>
+                        ` : ''}
+                        ${currentUser.role === 'admin' && user.role !== 'owner' && user.id !== currentUser.id ? `
+                            <button class="action-btn btn-edit" onclick="editUserRole(${user.id})">Edit Role</button>
+                        ` : ''}
+                    </td>
+                `;
+                table.appendChild(row);
+                
+                // Add to user select (only non-owners for admin assignment)
+                if (user.role !== 'owner' && user.role !== 'admin') {
+                    const option = document.createElement('option');
+                    option.value = user.id;
+                    option.textContent = `${user.name} (${user.email}) - ${formatRole(user.role)}`;
+                    userSelect.appendChild(option);
+                }
+            });
+
+            // Load content management data
+            loadContentManagement(blogPosts);
+            
+            // Load system info
+            loadSystemInfo(users, blogPosts, userGames);
+        }
+        
+        function formatRole(role) {
+            const roles = {
+                'gamer': 'Gamer',
+                'content-creator': 'Content Creator',
+                'youth-mentor': 'Youth Mentor',
+                'admin': 'Admin',
+                'owner': 'Owner'
+            };
+            return roles[role] || role;
+        }
+        
+        function openTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show the selected tab
+            document.getElementById(tabName).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+        
+        function makeAdmin() {
+            const userSelect = document.getElementById('userSelect');
+            const userId = parseInt(userSelect.value);
+            
+            if (!userId) {
+                alert('Please select a user');
+                return;
+            }
+            
+            if (confirm('Are you sure you want to make this user an admin?')) {
+                const users = JSON.parse(localStorage.getItem('users') || '[]');
+                const userIndex = users.findIndex(u => u.id === userId);
+                
+                if (userIndex !== -1) {
+                    users[userIndex].role = 'admin';
+                    users[userIndex].permissions = ['all', 'manage_users', 'manage_content', 'manage_roles'];
+                    localStorage.setItem('users', JSON.stringify(users));
+                    
+                    alert('User promoted to admin successfully!');
+                    loadUsers();
+                }
+            }
+        }
+        
+        function editUserRole(userId) {
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            const user = users.find(u => u.id === userId);
+            
+            if (user) {
+                const newRole = prompt('Enter new role (gamer/content-creator/youth-mentor/admin):', user.role);
+                if (newRole && ['gamer', 'content-creator', 'youth-mentor', 'admin'].includes(newRole)) {
+                    user.role = newRole;
+                    
+                    // Update permissions based on role
+                    const permissions = {
+                        'gamer': ['read_blogs', 'join_community', 'comment', 'like_content'],
+                        'content-creator': ['read_blogs', 'join_community', 'comment', 'like_content', 'create_blogs', 'edit_own_blogs', 'delete_own_blogs'],
+                        'youth-mentor': ['read_blogs', 'join_community', 'comment', 'like_content', 'create_blogs', 'edit_own_blogs', 'delete_own_blogs', 'moderate_comments', 'host_workshops', 'mentor_users'],
+                        'admin': ['all', 'manage_users', 'manage_content', 'manage_roles']
+                    };
+                    
+                    user.permissions = permissions[newRole] || permissions['gamer'];
+                    localStorage.setItem('users', JSON.stringify(users));
+                    loadUsers();
+                    alert('User role updated successfully!');
+                }
+            }
+        }
+        
+        function deleteUser(userId) {
+            if (confirm('Are you sure you want to delete this user?')) {
+                let users = JSON.parse(localStorage.getItem('users') || '[]');
+                users = users.filter(u => u.id !== userId);
+                localStorage.setItem('users', JSON.stringify(users));
+                loadUsers();
+                alert('User deleted successfully!');
+            }
+        }
+
+        function loadContentManagement(blogPosts) {
+            const publishedBlogs = blogPosts.filter(post => post.status === 'approved').length;
+            const pendingBlogs = blogPosts.filter(post => post.status === 'pending').length;
+            const totalComments = blogPosts.reduce((total, post) => total + (post.comments ? post.comments.length : 0), 0);
+            
+            document.getElementById('publishedBlogs').textContent = publishedBlogs;
+            document.getElementById('pendingBlogs').textContent = pendingBlogs;
+            document.getElementById('totalComments').textContent = totalComments;
+            
+            // Populate blogs table
+            const blogsTable = document.getElementById('blogsTable');
+            blogsTable.innerHTML = blogPosts.slice(0, 10).map(post => `
+                <tr>
+                    <td>${post.title}</td>
+                    <td>${post.authorName}</td>
+                    <td>${post.category}</td>
+                    <td><span class="role-badge ${post.status === 'approved' ? 'role-gamer' : 'role-content-creator'}">${post.status}</span></td>
+                    <td>${new Date(post.createdAt).toLocaleDateString()}</td>
+                    <td>
+                        <button class="action-btn btn-edit" onclick="viewBlog(${post.id})">View</button>
+                        ${currentUser.role === 'owner' ? `
+                            <button class="action-btn btn-delete" onclick="deleteBlog(${post.id})">Delete</button>
+                        ` : ''}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function loadSystemInfo(users, blogPosts, userGames) {
+            const systemStats = document.getElementById('systemStats');
+            const techInfo = document.getElementById('techInfo');
+            
+            const totalPlaytime = userGames.reduce((total, game) => total + (game.playtime || 0), 0);
+            const avgGamesPerUser = users.length > 0 ? (userGames.length / users.length).toFixed(1) : 0;
+            
+            systemStats.innerHTML = `
+                <p><strong>Total Users:</strong> ${users.length}</p>
+                <p><strong>Total Blog Posts:</strong> ${blogPosts.length}</p>
+                <p><strong>Total Games Tracked:</strong> ${userGames.length}</p>
+                <p><strong>Total Playtime Logged:</strong> ${totalPlaytime}h</p>
+                <p><strong>Average Games per User:</strong> ${avgGamesPerUser}</p>
+                <p><strong>Active Content Creators:</strong> ${users.filter(u => u.role === 'content-creator').length}</p>
+            `;
+            
+            techInfo.innerHTML = `
+                <p><strong>Platform:</strong> Progressive Web App (PWA)</p>
+                <p><strong>Storage:</strong> LocalStorage</p>
+                <p><strong>Last Data Update:</strong> ${new Date().toLocaleString()}</p>
+                <p><strong>Browser Support:</strong> All modern browsers</p>
+                <p><strong>Offline Capable:</strong> Yes</p>
+                <p><strong>Installable:</strong> Yes (PWA)</p>
+            `;
+        }
+
+        function viewBlog(blogId) {
+            alert(`Viewing blog ${blogId}. In a full implementation, this would open the blog editor.`);
+        }
+
+        function deleteBlog(blogId) {
+            if (confirm('Are you sure you want to delete this blog post?')) {
+                let blogPosts = JSON.parse(localStorage.getItem('blogPosts') || '[]');
+                blogPosts = blogPosts.filter(post => post.id !== blogId);
+                localStorage.setItem('blogPosts', JSON.stringify(blogPosts));
+                loadUsers();
+                alert('Blog post deleted successfully!');
+            }
+        }
+
+        function resetSystem() {
+            if (confirm('⚠️ DANGER: This will reset ALL data to default! This cannot be undone. Are you sure?')) {
+                localStorage.clear();
+                alert('System reset complete! Redirecting to home...');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 2000);
+            }
+        }
+
+        function exportAllData() {
+            const allData = {
+                users: JSON.parse(localStorage.getItem('users') || '[]'),
+                blogPosts: JSON.parse(localStorage.getItem('blogPosts') || '[]'),
+                userGames: JSON.parse(localStorage.getItem('userGames') || '[]'),
+                gamingActivity: JSON.parse(localStorage.getItem('gamingActivity') || '[]'),
+                gameLibrary: JSON.parse(localStorage.getItem('gameLibrary') || '[]'),
+                exportDate: new Date().toISOString()
+            };
+            
+            const dataStr = JSON.stringify(allData, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `gamepulse-full-backup-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            
+            alert('All data exported successfully!');
+        }
+
+        function cleanupData() {
+            if (confirm('Clean up demo and temporary data?')) {
+                localStorage.removeItem('demoUser');
+                localStorage.removeItem('blogDraft');
+                alert('Cleanup complete! Demo data removed.');
+                loadUsers();
+            }
+        }
+        
+        function logout() {
+            localStorage.removeItem('user');
+            window.location.href = 'login.html';
+        }
+        
+        // Load users when page loads
+        document.addEventListener('DOMContentLoaded', loadUsers);
+    </script>
+</body>
+</html>

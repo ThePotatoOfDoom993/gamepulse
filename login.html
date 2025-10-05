@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - GamePulse</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, #1a1a2e 100%);
+        }
+        
+        .login-box {
+            background: var(--bg-secondary);
+            padding: 3rem;
+            border-radius: var(--border-radius);
+            border: 1px solid #333;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        
+        .login-title {
+            text-align: center;
+            margin-bottom: 2rem;
+            background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            background: var(--bg-primary);
+            border: 1px solid #333;
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+        }
+        
+        .login-links {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+        
+        .login-links a {
+            color: var(--accent-primary);
+            text-decoration: none;
+        }
+        
+        .error-message {
+            color: #ff4444;
+            text-align: center;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .demo-credentials {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid var(--accent-primary);
+            border-radius: 6px;
+            padding: 1rem;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-box">
+            <h1 class="login-title">Welcome to GamePulse</h1>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="btn primary" style="width: 100%;">Login</button>
+                <div class="error-message" id="errorMessage">Invalid email or password</div>
+            </form>
+
+            <div class="demo-credentials">
+                <strong>Demo Account:</strong><br>
+                Email: demo@gamepulse.com<br>
+                Password: demo123<br>
+                <small>Or create your own account!</small>
+            </div>
+
+            <div class="login-links">
+                <a href="register.html">Don't have an account? Register</a><br>
+                <a href="index.html">← Back to Home</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize users if not exists
+        if (!localStorage.getItem('users')) {
+            const ownerUser = {
+                id: 1,
+                name: "Website Owner",
+                email: "aterrealms@gmail.com",
+                password: "minecraftplayer961400",
+                role: "owner",
+                joinDate: new Date().toISOString(),
+                profile: {
+                    bio: "Website Owner & Founder",
+                    gamingInterests: ["All Games"],
+                    avatar: "",
+                    status: "active"
+                },
+                permissions: ['all', 'assign_roles', 'manage_owners', 'manage_users', 'manage_content']
+            };
+
+            const demoUser = {
+                id: 2,
+                name: "Demo User",
+                email: "demo@gamepulse.com",
+                password: "demo123",
+                role: "gamer",
+                joinDate: new Date().toISOString(),
+                profile: {
+                    bio: "Demo account for testing",
+                    gamingInterests: ["RPG", "Adventure"],
+                    avatar: "",
+                    status: "active"
+                },
+                permissions: ['read_blogs', 'join_community', 'comment', 'like_content']
+            };
+
+            localStorage.setItem('users', JSON.stringify([ownerUser, demoUser]));
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            // Check users
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            const user = users.find(u => u.email === email && u.password === password);
+            
+            if (user) {
+                localStorage.setItem('user', JSON.stringify(user));
+                if (user.role === 'owner' || user.role === 'admin') {
+                    window.location.href = 'admin.html';
+                } else {
+                    window.location.href = 'dashboard.html';
+                }
+            } else {
+                document.getElementById('errorMessage').style.display = 'block';
+            }
+        });
+        
+        // Redirect if already logged in
+        const currentUser = JSON.parse(localStorage.getItem('user'));
+        if (currentUser) {
+            if (currentUser.role === 'owner' || currentUser.role === 'admin') {
+                window.location.href = 'admin.html';
+            } else {
+                window.location.href = 'dashboard.html';
+            }
+        }
+    </script>
+</body>
+</html>

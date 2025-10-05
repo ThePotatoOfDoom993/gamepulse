@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Details - GamePulse</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .game-details-container {
+            padding: 100px 20px 50px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .game-header {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            background: var(--bg-secondary);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            border: 1px solid #333;
+        }
+        
+        .game-cover-large {
+            width: 120px;
+            height: 120px;
+            border-radius: 12px;
+            background: linear-gradient(45deg, #333, #555);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+        }
+        
+        .game-info h1 {
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .game-meta {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+        
+        .status-select {
+            padding: 8px 16px;
+            background: var(--bg-primary);
+            border: 1px solid #333;
+            border-radius: 6px;
+            color: var(--text-primary);
+            margin-right: 1rem;
+        }
+        
+        .game-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: var(--bg-secondary);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            border: 1px solid #333;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent-primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .playtime-section {
+            background: var(--bg-secondary);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            border: 1px solid #333;
+            margin-bottom: 2rem;
+        }
+        
+        .playtime-form {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .playtime-form input {
+            padding: 12px;
+            background: var(--bg-primary);
+            border: 1px solid #333;
+            border-radius: 6px;
+            color: var(--text-primary);
+        }
+        
+        .playtime-history {
+            margin-top: 2rem;
+        }
+        
+        .playtime-entry {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #333;
+        }
+        
+        .playtime-entry:last-child {
+            border-bottom: none;
+        }
+        
+        .notes-section {
+            background: var(--bg-secondary);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            border: 1px solid #333;
+            margin-bottom: 2rem;
+        }
+        
+        .notes-textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 1rem;
+            background: var(--bg-primary);
+            border: 1px solid #333;
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            resize: vertical;
+        }
+        
+        .game-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .logout-btn {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo" data-glitch onclick="location.href='index.html'">GAMEPULSE</div>
+            <div class="nav-menu">
+                <a href="dashboard.html" class="nav-link">Dashboard</a>
+                <a href="games.html" class="nav-link">My Games</a>
+                <a href="blogs.html" class="nav-link">Blogs</a>
+                <a href="profile.html" class="nav-link">Profile</a>
+                <!-- Dynamic links based on role -->
+                <span id="roleLinks"></span>
+            </div>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </nav>
+
+    <div class="game-details-container">
+        <!-- Game Header -->
+        <div class="game-header" id="gameHeader">
+            <div class="game-cover-large" id="gameCover">🎮</div>
+            <div class="game-info">
+                <h1 id="gameTitle">Loading...</h1>
+                <div class="game-meta" id="gameMeta">Platform • Genre</div>
+                <div>
+                    <select class="status-select" id="statusSelect" onchange="updateGameStatus()">
+                        <option value="backlog">Backlog</option>
+                        <option value="playing">Playing</option>
+                        <option value="completed">Completed</option>
+                    </select>
+                    <button class="btn outline" onclick="deleteGame()">Delete Game</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Game Stats -->
+        <div class="game-stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalPlaytime">0h</div>
+                <div>Total Playtime</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="sessionsCount">0</div>
+                <div>Sessions</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="lastPlayed">-</div>
+                <div>Last Played</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="addedDate">-</div>
+                <div>Added</div>
+            </div>
+        </div>
+        
+        <!-- Playtime Tracking -->
+        <div class="playtime-section">
+            <h3>Log Playtime</h3>
+            <div class="playtime-form">
+                <input type="number" id="playtimeInput" placeholder="Enter playtime in hours" min="0.1" step="0.1">
+                <button class="btn primary" onclick="logPlaytime()">Add Playtime</button>
+            </div>
+            
+            <div class="playtime-history">
+                <h4>Recent Sessions</h4>
+                <div id="playtimeHistory">
+                    <!-- Playtime history will be populated here -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Notes Section -->
+        <div class="notes-section">
+            <h3>Game Notes</h3>
+            <textarea class="notes-textarea" id="gameNotes" placeholder="Add your thoughts, achievements, or notes about this game..." onchange="saveGameNotes()"></textarea>
+        </div>
+        
+        <!-- Game Actions -->
+        <div class="game-actions">
+            <button class="btn secondary" onclick="location.href='games.html'">← Back to Library</button>
+            <button class="btn outline" onclick="markAsCompleted()">Mark as Completed</button>
+            <button class="btn outline" onclick="startNewSession()">Start New Session</button>
+        </div>
+    </div>
+
+    <script src="scripts/script.js"></script>
+    <script>
+        // Check authentication
+        const currentUser = JSON.parse(localStorage.getItem('user')) || JSON.parse(localStorage.getItem('demoUser'));
+        if (!currentUser) {
+            window.location.href = 'login.html';
+        }
+
+        let currentGame = null;
+
+        // Get game ID from URL
+        function getGameIdFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return parseInt(urlParams.get('id'));
+        }
+
+        function loadGameDetails() {
+            const gameId = getGameIdFromUrl();
+            const userGames = JSON.parse(localStorage.getItem('userGames') || '[]');
+            
+            currentGame = userGames.find(game => game.id === gameId);
+            
+            if (!currentGame) {
+                alert('Game not found!');
+                window.location.href = 'games.html';
+                return;
+            }
+            
+            // Update UI with game data
+            document.getElementById('gameTitle').textContent = currentGame.title;
+            document.getElementById('gameMeta').textContent = `${currentGame.platform} • ${currentGame.genre}`;
+            document.getElementById('gameCover').textContent = currentGame.cover || '🎮';
+            document.getElementById('statusSelect').value = currentGame.status || 'backlog';
+            document.getElementById('totalPlaytime').textContent = (currentGame.playtime || 0) + 'h';
+            document.getElementById('sessionsCount').textContent = (currentGame.sessions || []).length;
+            document.getElementById('lastPlayed').textContent = currentGame.lastPlayed ? 
+                new Date(currentGame.lastPlayed).toLocaleDateString() : '-';
+            document.getElementById('addedDate').textContent = currentGame.addedDate ? 
+                new Date(currentGame.addedDate).toLocaleDateString() : '-';
+            
+            // Load notes
+            document.getElementById('gameNotes').value = currentGame.notes || '';
+            
+            // Load playtime history
+            loadPlaytimeHistory();
+        }
+
+        function loadPlaytimeHistory() {
+            const playtimeHistory = document.getElementById('playtimeHistory');
+            const sessions = currentGame.sessions || [];
+            
+            if (sessions.length === 0) {
+                playtimeHistory.innerHTML = '<p style="color: var(--text-secondary); text-align: center; padding: 2rem;">No playtime logged yet</p>';
+                return;
+            }
+            
+            playtimeHistory.innerHTML = sessions.slice(0, 10).map(session => `
+                <div class="playtime-entry">
+                    <div>
+                        <strong>${session.hours}h</strong> logged
+                        <div style="color: var(--text-secondary); font-size: 0.9rem;">
+                            ${new Date(session.date).toLocaleDateString()}
+                        </div>
+                    </div>
+                    <button class="btn outline" style="padding: 4px 8px; font-size: 0.8rem;" onclick="deleteSession('${session.date}')">Delete</button>
+                </div>
+            `).join('');
+        }
+
+        function updateGameStatus() {
+            const newStatus = document.getElementById('statusSelect').value;
+            const userGames = JSON.parse(localStorage.getItem('userGames') || '[]');
+            const gameIndex = userGames.findIndex(game => game.id === currentGame.id);
+            
+            if (gameIndex !== -1) {
+                userGames[gameIndex].status = newStatus;
+                
+                if (newStatus === 'completed' && !userGames[gameIndex].completedDate) {
+                    userGames[gameIndex].completedDate = new Date().toISOString();
+                }
+                
+                localStorage.setItem('userGames', JSON.stringify(userGames));
+                currentGame = userGames[gameIndex];
+                
+                // Add activity
+                addActivity('game_updated', `Updated ${currentGame.title} status to ${newStatus}`);
+                
+                alert(`Status updated to ${newStatus}!`);
+            }
+        }
+
+        function logPlaytime() {
+            const playtimeInput = document.getElementById('playtimeInput');
+            const hours = parseFloat(playtimeInput.value);
+            
+            if (!hours || hours <= 0) {
+                alert('Please enter a valid playtime');
+                return;
+            }
+            
+            const userGames = JSON.parse(localStorage.getItem('userGames') || '[]');
+            const gameIndex = userGames.findIndex(game => game.id === currentGame.id);
+            
+            if (gameIndex !== -1) {
+                // Initialize sessions array if it doesn't exist
+                if (!userGames[gameIndex].sessions) {
+                    userGames[gameIndex].sessions = [];
+                }
+                
+                // Add new session
+                const newSession = {
+                    hours: hours,
+                    date: new Date().toISOString()
+                };
+                
+                userGames[gameIndex].sessions.unshift(newSession);
+                userGames[gameIndex].playtime = (userGames[gameIndex].playtime || 0) + hours;
+                userGames[gameIndex].lastPlayed = new Date().toISOString();
+                
+                localStorage.setItem('userGames', JSON.stringify(userGames));
+                currentGame = userGames[gameIndex];
+                
+                // Add activity
+                addActivity('playtime_logged', `Logged ${hours}h of ${currentGame.title}`);
+                
+                // Clear input and reload
+                playtimeInput.value = '';
+                loadGameDetails();
+                
+                alert(`Added ${hours} hours of playtime!`);
+            }
+        }
+
+        function deleteSession(sessionDate) {
+            if (!confirm('Delete this playtime session?')) return;
+            
+            const userGames = JSON.parse(localStorage.getItem('userGames') || '[]');
+            const gameIndex = userGames.findIndex(game => game.id === currentGame.id);
+            
+            if (gameIndex !== -1 && userGames[gameIndex].sessions) {
+                const sessionIndex = userGames[gameIndex].sessions.findIndex(s => s.date === sessionDate);
+                if (sessionIndex !== -1) {
+                    const sessionHours = userGames[gameIndex].sessions[sessionIndex].hours;
+                    userGames[gameIndex].sessions.splice(sessionIndex, 1);
+                    userGames[gameIndex].playtime = Math.max(0, (userGames[gameIndex].playtime || 0) - sessionHours);
+                    
+                    localStorage.setItem('userGames', JSON.stringify(userGames));
+                    currentGame = userGames[gameIndex];
+                    loadGameDetails();
+                }
+            }
+        }
+
+        function saveGameNotes() {
+            const notes = document.getElementById('gameNotes').value;
+            const userGames = JSON.parse(localStorage.getItem('userGames') || '[]');
+            const gameIndex = userGames.findIndex(game => game.id === currentGame.id);
+            
+            if (gameIndex !== -1) {
+                userGames[gameIndex].notes = notes;
+                localStorage.setItem('userGames', JSON.stringify(userGames));
+                currentGame = userGames[gameIndex];
+            }
+        }
+
+        function markAsCompleted() {
+            document.getElementById('statusSelect').value = 'completed';
+            updateGameStatus();
+        }
+
+        function startNewSession() {
+            document.getElementById('playtimeInput').focus();
+        }
+
+        function deleteGame() {
+            if (!confirm('Are you sure you want to delete this game from your library?')) return;
+            
+            const userGames = JSON.parse(localStorage.getItem('userGames') || '[]');
+            const updatedGames = userGames.filter(game => game.id !== currentGame.id);
+            
+            localStorage.setItem('userGames', JSON.stringify(updatedGames));
+            
+            // Add activity
+            addActivity('game_removed', `Removed ${currentGame.title} from library`);
+            
+            alert('Game deleted from your library!');
+            window.location.href = 'games.html';
+        }
+
+        function addActivity(type, message) {
+            const gamingActivity = JSON.parse(localStorage.getItem('gamingActivity') || '[]');
+            gamingActivity.unshift({
+                type: type,
+                message: message,
+                timestamp: new Date().toISOString()
+            });
+            localStorage.setItem('gamingActivity', JSON.stringify(gamingActivity.slice(0, 50)));
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('user');
+                localStorage.removeItem('demoUser');
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Update navigation based on user role
+        function updateNavigation() {
+            const roleLinks = document.getElementById('roleLinks');
+            if (currentUser.role === 'admin' || currentUser.role === 'owner') {
+                roleLinks.innerHTML = '<a href="admin.html" class="nav-link">Admin</a>';
+            } else if (['content-creator', 'youth-mentor'].includes(currentUser.role)) {
+                roleLinks.innerHTML = '<a href="create-blog.html" class="nav-link">Create Blog</a>';
+            }
+        }
+
+        // Initialize and load game details
+        document.addEventListener('DOMContentLoaded', function() {
+            loadGameDetails();
+            updateNavigation();
+        });
+    </script>
+</body>
+</html>

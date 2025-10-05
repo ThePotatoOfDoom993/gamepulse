@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GamePulse | Track Your Gaming Journey</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#00ff88">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="GamePulse">
+    <link rel="manifest" href="manifest.json">
+    
+    <style>
+        .new-features {
+            background: var(--bg-secondary);
+            padding: 4rem 0;
+        }
+        
+        .features-grid-enhanced {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .feature-card-enhanced {
+            background: var(--bg-primary);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            border: 1px solid #333;
+            text-align: center;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+        
+        .feature-card-enhanced:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-primary);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .feature-icon-large {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .cta-section {
+            background: linear-gradient(135deg, var(--bg-primary) 0%, #1a1a2e 100%);
+            padding: 5rem 0;
+            text-align: center;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .demo-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 3rem 0;
+        }
+        
+        .demo-stat {
+            text-align: center;
+            padding: 1.5rem;
+        }
+        
+        .demo-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent-primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .platform-badges {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .platform-badge {
+            background: var(--bg-secondary);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            border: 1px solid #333;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .local-mode-indicator {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: #ffaa00;
+            color: black;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 10000;
+        }
+    </style>
+</head>
+<body>
+    <!-- Local Mode Indicator -->
+    <div id="localModeIndicator" class="local-mode-indicator" style="display: none;">
+        🏠 LOCAL MODE - Use server for full features
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress-bar"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo" data-glitch>GAMEPULSE</div>
+            <div class="nav-menu">
+                <a href="#home" class="nav-link active">Home</a>
+                <a href="#features" class="nav-link">Features</a>
+                <a href="#gaming" class="nav-link">Gaming Tracker</a>
+                <a href="#community" class="nav-link">Community</a>
+                <a href="login.html" class="nav-link">Login</a>
+                <a href="register.html" class="nav-link">Register</a>
+            </div>
+            <button class="btn primary" id="tryDemoBtn">Try Demo</button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-container">
+            <h1 class="hero-title">
+                <span class="title-word">Track.</span>
+                <span class="title-word">Play.</span>
+                <span class="title-word">Connect.</span>
+            </h1>
+            <p class="hero-subtitle">Your ultimate gaming companion. Track playtime across all platforms, discover new games, and connect with fellow gamers.</p>
+            
+            <!-- Demo Stats -->
+            <div class="demo-stats">
+                <div class="demo-stat">
+                    <div class="demo-number" id="demoGames">0</div>
+                    <div>Games Tracked</div>
+                </div>
+                <div class="demo-stat">
+                    <div class="demo-number" id="demoPlaytime">0</div>
+                    <div>Hours Logged</div>
+                </div>
+                <div class="demo-stat">
+                    <div class="demo-number" id="demoGamers">0</div>
+                    <div>Active Gamers</div>
+                </div>
+                <div class="demo-stat">
+                    <div class="demo-number" id="demoPlatforms">5+</div>
+                    <div>Platforms</div>
+                </div>
+            </div>
+            
+            <div class="hero-buttons">
+                <button class="btn primary" id="getStartedBtn">Get Started Free</button>
+                <button class="btn secondary" id="seeFeaturesBtn">See Features</button>
+                <a href="#demo" class="btn outline">Live Demo</a>
+            </div>
+            
+            <!-- Platform Badges -->
+            <div class="platform-badges">
+                <div class="platform-badge">🎮 PC</div>
+                <div class="platform-badge">🎯 PlayStation</div>
+                <div class="platform-badge">⚡ Xbox</div>
+                <div class="platform-badge">🎪 Nintendo Switch</div>
+                <div class="platform-badge">📱 Mobile</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- New Gaming Features Section -->
+    <section id="gaming" class="new-features">
+        <div class="container">
+            <h2 class="section-title">Your Gaming Headquarters</h2>
+            <p class="hero-subtitle" style="text-align: center; margin-bottom: 3rem;">Everything you need to track and enhance your gaming experience</p>
+            
+            <div class="features-grid-enhanced">
+                <div class="feature-card-enhanced" onclick="location.href='dashboard.html'">
+                    <div class="feature-icon-large">📊</div>
+                    <h3>Smart Dashboard</h3>
+                    <p>Personalized welcome back with your gaming stats, recent activity, and quick actions</p>
+                    <div class="blog-meta">Real-time tracking</div>
+                </div>
+                
+                <div class="feature-card-enhanced" onclick="location.href='games.html'">
+                    <div class="feature-icon-large">🎮</div>
+                    <h3>Game Library</h3>
+                    <p>Add games from any platform, track playtime, and organize your backlog</p>
+                    <div class="blog-meta">Multi-platform support</div>
+                </div>
+                
+                <div class="feature-card-enhanced" onclick="showPWAInstall()">
+                    <div class="feature-icon-large">📱</div>
+                    <h3>Cross-Platform Sync</h3>
+                    <p>Use on any device - website, desktop app, or mobile. Your data syncs everywhere</p>
+                    <div class="blog-meta">PWA Ready</div>
+                </div>
+                
+                <div class="feature-card-enhanced" onclick="location.href='#community'">
+                    <div class="feature-icon-large">👥</div>
+                    <h3>Gaming Community</h3>
+                    <p>Connect with friends, share achievements, and discover new games together</p>
+                    <div class="blog-meta">Social features</div>
+                </div>
+                
+                <div class="feature-card-enhanced" onclick="showStatsDemo()">
+                    <div class="feature-icon-large">📈</div>
+                    <h3>Advanced Statistics</h3>
+                    <p>Deep insights into your gaming habits, play patterns, and achievements</p>
+                    <div class="blog-meta">Analytics</div>
+                </div>
+                
+                <div class="feature-card-enhanced" onclick="location.href='blogs.html'">
+                    <div class="feature-icon-large">📝</div>
+                    <h3>Gaming Blogs</h3>
+                    <p>Read and create content about gaming culture, reviews, and industry news</p>
+                    <div class="blog-meta">Content creation</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Live Demo Section -->
+    <section id="demo" class="pricing">
+        <div class="container">
+            <h2 class="section-title">See It In Action</h2>
+            <p class="hero-subtitle" style="text-align: center; margin-bottom: 3rem;">Experience the power of GamePulse with our interactive demo</p>
+            
+            <div class="pricing-grid">
+                <div class="pricing-card demo-card">
+                    <h3>🎯 Quick Start</h3>
+                    <div class="price">Instant Demo</div>
+                    <ul class="feature-list">
+                        <li>✓ Try the game tracker</li>
+                        <li>✓ Add sample games</li>
+                        <li>✓ Log playtime sessions</li>
+                        <li>✓ Explore features</li>
+                        <li>✓ No registration needed</li>
+                    </ul>
+                    <button class="btn primary" onclick="startDemo()">Launch Interactive Demo</button>
+                </div>
+                
+                <div class="pricing-card popular demo-card">
+                    <div class="popular-badge">RECOMMENDED</div>
+                    <h3>🚀 Full Experience</h3>
+                    <div class="price">Free Account</div>
+                    <ul class="feature-list">
+                        <li>✓ All demo features</li>
+                        <li>✓ Save your progress</li>
+                        <li>✓ Connect with friends</li>
+                        <li>✓ Cross-platform sync</li>
+                        <li>✓ Permanent storage</li>
+                    </ul>
+                    <a href="register.html" class="btn primary">Create Free Account</a>
+                </div>
+                
+                <div class="pricing-card demo-card">
+                    <h3>🛠️ For Developers</h3>
+                    <div class="price">Open Source</div>
+                    <ul class="feature-list">
+                        <li>✓ PWA ready</li>
+                        <li>✓ Modular design</li>
+                        <li>✓ Easy to customize</li>
+                        <li>✓ Local storage first</li>
+                        <li>✓ Mobile optimized</li>
+                    </ul>
+                    <button class="btn outline" onclick="showDevInfo()">Developer Info</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Original Features Section (Updated) -->
+    <section id="features" class="features">
+        <div class="container">
+            <h2 class="section-title">More Than Just Tracking</h2>
+            <div class="features-grid">
+                <div class="feature-card blog-preview" onclick="location.href='blogs.html'">
+                    <div class="feature-icon">👍</div>
+                    <h3>Educational Content</h3>
+                    <p>Learn about gaming's impact on development, creativity, and social skills.</p>
+                    <div class="blog-meta">5 min read • Education</div>
+                </div>
+                <div class="feature-card blog-preview" onclick="location.href='blogs.html#roblox-bad'">
+                    <div class="feature-icon">⚠️</div>
+                    <h3>Safety Guides</h3>
+                    <p>Essential information about online safety and responsible gaming practices.</p>
+                    <div class="blog-meta">6 min read • Safety</div>
+                </div>
+                <div class="feature-card blog-preview" onclick="location.href='blogs.html#parent-guide'">
+                    <div class="feature-icon">👨‍👩‍👧‍👦</div>
+                    <h3>Parent Resources</h3>
+                    <p>Tools and guides for parents to understand and manage gaming habits.</p>
+                    <div class="blog-meta">4 min read • Guide</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Community Section -->
+    <section id="community" class="pricing">
+        <div class="container">
+            <h2 class="section-title">Join Our Community</h2>
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <h3>Gamer</h3>
+                    <div class="price">Free</div>
+                    <ul class="feature-list">
+                        <li>✓ Game Tracking</li>
+                        <li>✓ Playtime Analytics</li>
+                        <li>✓ Community Access</li>
+                        <li>✓ Blog Reading</li>
+                        <li>✓ Basic Statistics</li>
+                    </ul>
+                    <a href="register.html" class="btn outline">Join Now</a>
+                </div>
+                
+                <div class="pricing-card popular">
+                    <div class="popular-badge">MOST POPULAR</div>
+                    <h3>Content Creator</h3>
+                    <div class="price">Free</div>
+                    <ul class="feature-list">
+                        <li>✓ All Gamer Features</li>
+                        <li>✓ Write Gaming Blogs</li>
+                        <li>✓ Creator Profile</li>
+                        <li>✓ Advanced Analytics</li>
+                        <li>✓ Early Access Features</li>
+                    </ul>
+                    <a href="register.html" class="btn primary">Join Now</a>
+                </div>
+                
+                <div class="pricing-card">
+                    <h3>Youth Mentor</h3>
+                    <div class="price">Free</div>
+                    <ul class="feature-list">
+                        <li>✓ All Creator Features</li>
+                        <li>✓ Mentorship Tools</li>
+                        <li>✓ Workshop Hosting</li>
+                        <li>✓ Verified Badge</li>
+                        <li>✓ Community Leadership</li>
+                    </ul>
+                    <a href="register.html" class="btn outline">Apply Now</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="experimental">
+        <div class="container">
+            <h2 class="section-title glitch-text" data-text="WHY_GAMEPULSE">WHY GAMEPULSE</h2>
+            <div class="experimental-grid">
+                <div class="exp-card">
+                    <h3>🎯</h3>
+                    <p><strong>Smart Tracking</strong><br>Automatic playtime tracking across all your devices</p>
+                </div>
+                <div class="exp-card">
+                    <h3>📊</h3>
+                    <p><strong>Deep Insights</strong><br>Understand your gaming habits with detailed analytics</p>
+                </div>
+                <div class="exp-card">
+                    <h3>👥</h3>
+                    <p><strong>Community Driven</strong><br>Connect with gamers who share your passions</p>
+                </div>
+                <div class="exp-card">
+                    <h3>🚀</h3>
+                    <p><strong>Always Evolving</strong><br>Regular updates with new features and improvements</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <h2 class="section-title">Ready to Level Up Your Gaming?</h2>
+            <p class="hero-subtitle">Join thousands of gamers already tracking their journey with GamePulse</p>
+            <div class="cta-buttons">
+                <a href="register.html" class="btn primary" style="padding: 1rem 2rem; font-size: 1.1rem;">Start Tracking Free</a>
+                <button class="btn secondary" onclick="startDemo()" style="padding: 1rem 2rem; font-size: 1.1rem;">Try Demo First</button>
+                <a href="login.html" class="btn outline" style="padding: 1rem 2rem; font-size: 1.1rem;">I Have an Account</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>GamePulse</h4>
+                    <p>Your ultimate gaming companion. Track, play, and connect across all platforms.</p>
+                    <div style="margin-top: 1rem;">
+                        <button class="btn outline" onclick="showPWAInstall()" style="padding: 0.5rem 1rem; font-size: 0.9rem;">📱 Install App</button>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Gaming Features</h4>
+                    <a href="dashboard.html">Dashboard</a>
+                    <a href="games.html">Game Library</a>
+                    <a href="game-details.html">Game Tracking</a>
+                    <a href="#demo">Live Demo</a>
+                    <a href="#community">Community</a>
+                </div>
+                <div class="footer-section">
+                    <h4>Content</h4>
+                    <a href="blogs.html">Gaming Blogs</a>
+                    <a href="create-blog.html">Write Blog</a>
+                    <a href="#features">Resources</a>
+                    <a href="#community">Guides</a>
+                </div>
+                <div class="footer-section">
+                    <h4>Account</h4>
+                    <a href="login.html">Login</a>
+                    <a href="register.html">Register</a>
+                    <a href="profile.html">My Profile</a>
+                    <a href="dashboard.html">Dashboard</a>
+                    <a href="#" onclick="showSupport()">Support</a>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #333;">
+                <p>&copy; 2024 GamePulse. Built with ♥ for gamers everywhere. | 
+                   <a href="#" style="color: var(--accent-primary);" onclick="showDevInfo()">Developer Mode</a>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Floating Install Button -->
+    <div id="floatingInstallBtn" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999;">
+        <button class="btn primary" onclick="showPWAInstall()" 
+                style="padding: 12px 16px; border-radius: 50px; box-shadow: 0 4px 12px rgba(0,255,136,0.3);">
+            📱 Install App
+        </button>
+    </div>
+
+    <script src="scripts/script.js"></script>
+    <script src="scripts/pwa.js"></script>
+    
+    <script>
+        // Demo counter animation
+        function animateCounter(element, target, duration = 2000) {
+            let start = 0;
+            const increment = target / (duration / 16);
+            const timer = setInterval(() => {
+                start += increment;
+                if (start >= target) {
+                    element.textContent = target;
+                    clearInterval(timer);
+                } else {
+                    element.textContent = Math.floor(start);
+                }
+            }, 16);
+        }
+
+        // Initialize demo stats
+        function initDemoStats() {
+            // Simulate some demo data
+            setTimeout(() => {
+                animateCounter(document.getElementById('demoGames'), 1274);
+                animateCounter(document.getElementById('demoPlaytime'), 28476);
+                animateCounter(document.getElementById('demoGamers'), 893);
+            }, 1000);
+        }
+
+        // Start interactive demo
+        function startDemo() {
+            // Check if user is logged in
+            const currentUser = JSON.parse(localStorage.getItem('user'));
+            if (currentUser) {
+                // User is logged in, go to dashboard
+                window.location.href = 'dashboard.html';
+            } else {
+                // Show demo mode info
+                alert('🎮 Demo Mode Activated!\n\nYou can explore all features without an account. Your demo data will be saved in this browser until you clear it.\n\nTo save your progress permanently, create a free account!');
+                
+                // Create a demo user session
+                const demoUser = {
+                    id: 'demo',
+                    name: 'Demo User',
+                    email: 'demo@gamepulse.com',
+                    role: 'gamer',
+                    isDemo: true
+                };
+                localStorage.setItem('demoUser', JSON.stringify(demoUser));
+                
+                // Redirect to dashboard
+                window.location.href = 'dashboard.html';
+            }
+        }
+
+        // Show PWA install prompt
+        function showPWAInstall() {
+            if (window.gamePulsePWA) {
+                window.gamePulsePWA.installApp();
+            } else {
+                alert('📱 PWA Installation\n\nGamePulse can be installed as an app on your device! Look for the "Install" button that appears or use your browser\'s "Add to Home Screen" feature.\n\nOn GitHub Pages, the PWA should work perfectly!');
+            }
+        }
+
+        // Show stats demo
+        function showStatsDemo() {
+            alert('📊 Advanced Statistics\n\n• Playtime heatmaps\n• Genre preferences\n• Achievement tracking\n• Progress analytics\n• Friend comparisons\n\nAll available in your dashboard!');
+        }
+
+        // Show developer information
+        function showDevInfo() {
+            alert('🛠️ Developer Information\n\nGamePulse is built with:\n• Progressive Web App (PWA) technology\n• Local-first data storage\n• Modular JavaScript architecture\n• Responsive CSS design\n• Offline capability\n\nPerfect for learning web development!');
+        }
+
+        // Show support information
+        function showSupport() {
+            alert('💬 Support\n\nNeed help? Here are your options:\n\n📧 Email: aterrealms@gmail.com\n🎮 Demo: Try the interactive demo\n📚 Guides: Check our blog section\n🐛 Issues: Use Developer Mode info\n\nWe\'re here to help!');
+        }
+
+        // Button event listeners
+        document.getElementById('getStartedBtn')?.addEventListener('click', () => {
+            window.location.href = 'register.html';
+        });
+
+        document.getElementById('seeFeaturesBtn')?.addEventListener('click', () => {
+            document.getElementById('gaming').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        document.getElementById('tryDemoBtn')?.addEventListener('click', startDemo);
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initDemoStats();
+            
+            // Update navigation for logged-in users
+            updateNavigation();
+            
+            // Show local mode warning if running from file
+            if (window.location.protocol === 'file:') {
+                document.getElementById('localModeIndicator').style.display = 'block';
+                console.warn('🏠 GamePulse running in local file mode. PWA features disabled.');
+            }
+            
+            // Check if we should show install prompt
+            setTimeout(() => {
+                if (window.gamePulsePWA && !window.gamePulsePWA.isRunningAsPWA()) {
+                    showPWAInstall();
+                }
+            }, 3000);
+        });
+
+        // Enhanced smooth scrolling for new sections
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

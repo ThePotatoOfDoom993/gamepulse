@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Blog - GamePulse</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .create-container {
+            padding: 100px 20px 50px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .create-form {
+            background: var(--bg-secondary);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            border: 1px solid #333;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            background: var(--bg-primary);
+            border: 1px solid #333;
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+        }
+        
+        .form-group textarea {
+            min-height: 300px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .error-message {
+            color: #ff4444;
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(255, 68, 68, 0.1);
+            border-radius: 6px;
+            border-left: 4px solid #ff4444;
+            display: none;
+        }
+        
+        .success-message {
+            color: var(--accent-primary);
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(0, 255, 136, 0.1);
+            border-radius: 6px;
+            border-left: 4px solid var(--accent-primary);
+            display: none;
+        }
+        
+        .logout-btn {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .writing-tips {
+            background: rgba(0, 136, 255, 0.1);
+            border: 1px solid var(--accent-secondary);
+            border-radius: 6px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .writing-tips h3 {
+            color: var(--accent-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .writing-tips ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .writing-tips li {
+            padding: 0.5rem 0;
+            color: var(--text-secondary);
+        }
+
+        .writing-tips li:before {
+            content: "💡 ";
+            color: var(--accent-secondary);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo" data-glitch onclick="location.href='index.html'">GAMEPULSE</div>
+            <div class="nav-menu">
+                <a href="dashboard.html" class="nav-link">Dashboard</a>
+                <a href="games.html" class="nav-link">My Games</a>
+                <a href="blogs.html" class="nav-link">Blogs</a>
+                <a href="profile.html" class="nav-link">My Profile</a>
+                <a href="create-blog.html" class="nav-link active">Create Blog</a>
+            </div>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </nav>
+
+    <div class="create-container">
+        <h1 class="section-title">Create New Blog Post</h1>
+
+        <div class="writing-tips">
+            <h3>📝 Writing Tips</h3>
+            <ul>
+                <li>Start with an engaging title that captures attention</li>
+                <li>Use clear paragraphs and headings to organize your thoughts</li>
+                <li>Share personal experiences and insights</li>
+                <li>Include practical tips and advice for readers</li>
+                <li>Proofread before publishing</li>
+            </ul>
+        </div>
+        
+        <div class="create-form">
+            <form id="blogForm">
+                <div class="form-group">
+                    <label for="title">Blog Title *</label>
+                    <input type="text" id="title" name="title" required placeholder="Enter an engaging title...">
+                </div>
+                
+                <div class="form-group">
+                    <label for="category">Category *</label>
+                    <select id="category" name="category" required>
+                        <option value="">Select a category</option>
+                        <option value="education">Education & Learning</option>
+                        <option value="safety">Online Safety</option>
+                        <option value="parenting">Parent Guides</option>
+                        <option value="creativity">Creativity & Design</option>
+                        <option value="coding">Coding & Development</option>
+                        <option value="community">Community & Social</option>
+                        <option value="gaming">Gaming Culture</option>
+                        <option value="reviews">Game Reviews</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="content">Blog Content *</label>
+                    <textarea id="content" name="content" required placeholder="Write your blog content here... You can use basic formatting with paragraphs and headings."></textarea>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn primary">Publish Blog Post</button>
+                    <button type="button" class="btn outline" onclick="saveDraft()">Save as Draft</button>
+                    <a href="blogs.html" class="btn outline">Cancel</a>
+                </div>
+                
+                <div class="error-message" id="errorMessage"></div>
+                <div class="success-message" id="successMessage"></div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Check authentication and permissions
+        const currentUser = JSON.parse(localStorage.getItem('user')) || JSON.parse(localStorage.getItem('demoUser'));
+        if (!currentUser) {
+            window.location.href = 'login.html';
+        }
+
+        // Allow admin, content-creator, youth-mentor, and owner to create blogs
+        const allowedRoles = ['admin', 'content-creator', 'youth-mentor', 'owner'];
+        if (!allowedRoles.includes(currentUser.role)) {
+            alert('You do not have permission to create blog posts. Please upgrade to Content Creator role.');
+            window.location.href = 'profile.html';
+        }
+
+        // Load any existing draft
+        function loadDraft() {
+            const draft = localStorage.getItem('blogDraft');
+            if (draft) {
+                const draftData = JSON.parse(draft);
+                document.getElementById('title').value = draftData.title || '';
+                document.getElementById('category').value = draftData.category || '';
+                document.getElementById('content').value = draftData.content || '';
+                
+                if (draftData.title || draftData.content) {
+                    showSuccess('Draft loaded automatically. You can continue editing.');
+                }
+            }
+        }
+
+        function saveDraft() {
+            const title = document.getElementById('title').value.trim();
+            const category = document.getElementById('category').value;
+            const content = document.getElementById('content').value.trim();
+            
+            const draftData = {
+                title: title,
+                category: category,
+                content: content,
+                savedAt: new Date().toISOString()
+            };
+            
+            localStorage.setItem('blogDraft', JSON.stringify(draftData));
+            showSuccess('Draft saved successfully!');
+        }
+
+        function clearDraft() {
+            localStorage.removeItem('blogDraft');
+        }
+
+        document.getElementById('blogForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const title = document.getElementById('title').value.trim();
+            const category = document.getElementById('category').value;
+            const content = document.getElementById('content').value.trim();
+            
+            // Validation
+            if (!title || !category || !content) {
+                showError('Please fill in all required fields');
+                return;
+            }
+
+            if (content.length < 50) {
+                showError('Blog content should be at least 50 characters long');
+                return;
+            }
+            
+            // Create blog post
+            const blogPosts = JSON.parse(localStorage.getItem('blogPosts') || '[]');
+            const newPost = {
+                id: Date.now(),
+                title: title,
+                category: category,
+                content: content,
+                tags: getTagsFromContent(content),
+                authorId: currentUser.id,
+                authorName: currentUser.name,
+                authorRole: currentUser.role,
+                status: 'approved', // Auto-approve for admins and owners
+                createdAt: new Date().toISOString(),
+                views: 0,
+                likes: 0,
+                comments: []
+            };
+            
+            blogPosts.push(newPost);
+            localStorage.setItem('blogPosts', JSON.stringify(blogPosts));
+            
+            // Clear draft
+            clearDraft();
+            
+            // Clear form
+            document.getElementById('blogForm').reset();
+            
+            showSuccess('Blog post published successfully! Redirecting to blogs...');
+            
+            // Redirect to blogs after 2 seconds
+            setTimeout(() => {
+                window.location.href = 'blogs.html';
+            }, 2000);
+        });
+
+        function getTagsFromContent(content) {
+            // Simple tag extraction - in a real app, this would be more sophisticated
+            const commonTags = ['gaming', 'education', 'safety', 'parenting', 'creativity', 'coding', 'community'];
+            const foundTags = commonTags.filter(tag => 
+                content.toLowerCase().includes(tag)
+            );
+            return foundTags.length > 0 ? foundTags : ['general'];
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            const successDiv = document.getElementById('successMessage');
+            
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            successDiv.style.display = 'none';
+        }
+
+        function showSuccess(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            const successDiv = document.getElementById('successMessage');
+            
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+            errorDiv.style.display = 'none';
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('user');
+                localStorage.removeItem('demoUser');
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Auto-save draft every 30 seconds
+        setInterval(saveDraft, 30000);
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDraft();
+            
+            // Show auto-save indicator
+            console.log('Auto-save enabled: Draft will be saved every 30 seconds');
+        });
+    </script>
+</body>
+</html>

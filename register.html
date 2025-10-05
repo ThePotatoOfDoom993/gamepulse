@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - GamePulse</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, #1a1a2e 100%);
+        }
+        
+        .login-box {
+            background: var(--bg-secondary);
+            padding: 3rem;
+            border-radius: var(--border-radius);
+            border: 1px solid #333;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        
+        .login-title {
+            text-align: center;
+            margin-bottom: 2rem;
+            background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            background: var(--bg-primary);
+            border: 1px solid #333;
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+        
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+        }
+        
+        .role-options {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .role-option {
+            background: var(--bg-primary);
+            padding: 1rem;
+            border: 2px solid #333;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .role-option.selected {
+            border-color: var(--accent-primary);
+            background: rgba(0, 255, 136, 0.1);
+        }
+        
+        .role-option h4 {
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .role-option p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin: 0;
+        }
+        
+        .login-links {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+        
+        .login-links a {
+            color: var(--accent-primary);
+            text-decoration: none;
+        }
+        
+        .error-message {
+            color: #ff4444;
+            text-align: center;
+            margin-top: 1rem;
+            display: none;
+        }
+        
+        .success-message {
+            color: var(--accent-primary);
+            text-align: center;
+            margin-top: 1rem;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-box">
+            <h1 class="login-title">Join GamePulse</h1>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required minlength="6">
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Choose Your Role</label>
+                    <div class="role-options">
+                        <div class="role-option" data-role="gamer" onclick="selectRole('gamer')">
+                            <h4>🎮 Gamer</h4>
+                            <p>Access blogs, join community, and participate in discussions</p>
+                        </div>
+                        <div class="role-option" data-role="content-creator" onclick="selectRole('content-creator')">
+                            <h4>📝 Content Creator</h4>
+                            <p>Submit blogs, create content, and build your creator profile</p>
+                        </div>
+                        <div class="role-option" data-role="youth-mentor" onclick="selectRole('youth-mentor')">
+                            <h4>🌟 Youth Mentor</h4>
+                            <p>Lead workshops, mentor others, and help build the community</p>
+                        </div>
+                    </div>
+                    <input type="hidden" id="selectedRole" name="role" required>
+                </div>
+                
+                <button type="submit" class="btn primary" style="width: 100%;">Create Account</button>
+                <div class="error-message" id="errorMessage"></div>
+                <div class="success-message" id="successMessage">Account created successfully! Redirecting...</div>
+            </form>
+            <div class="login-links">
+                <a href="login.html">Already have an account? Login</a><br>
+                <a href="index.html">← Back to Home</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedRole = '';
+        
+        function selectRole(role) {
+            selectedRole = role;
+            document.getElementById('selectedRole').value = role;
+            
+            // Update UI
+            document.querySelectorAll('.role-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            document.querySelector(`[data-role="${role}"]`).classList.add('selected');
+        }
+        
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const role = document.getElementById('selectedRole').value;
+            
+            // Validation
+            if (!role) {
+                showError('Please select a role');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                showError('Passwords do not match');
+                return;
+            }
+            
+            if (password.length < 6) {
+                showError('Password must be at least 6 characters');
+                return;
+            }
+            
+            // Check if user already exists
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            if (users.find(u => u.email === email)) {
+                showError('User with this email already exists');
+                return;
+            }
+            
+            // Create new user
+            const newUser = {
+                id: Date.now(),
+                name: name,
+                email: email,
+                password: password,
+                role: role,
+                joinDate: new Date().toISOString(),
+                profile: {
+                    bio: '',
+                    gamingInterests: [],
+                    avatar: '',
+                    status: 'active'
+                },
+                permissions: getRolePermissions(role)
+            };
+            
+            users.push(newUser);
+            localStorage.setItem('users', JSON.stringify(users));
+            
+            // Show success message
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('successMessage').style.display = 'block';
+            
+            // Redirect to login after 2 seconds
+            setTimeout(() => {
+                window.location.href = 'login.html';
+            }, 2000);
+        });
+        
+        function getRolePermissions(role) {
+            const permissions = {
+                'gamer': ['read_blogs', 'join_community', 'comment', 'like_content'],
+                'content-creator': ['read_blogs', 'join_community', 'comment', 'like_content', 'create_blogs', 'edit_own_blogs', 'delete_own_blogs'],
+                'youth-mentor': ['read_blogs', 'join_community', 'comment', 'like_content', 'create_blogs', 'edit_own_blogs', 'delete_own_blogs', 'moderate_comments', 'host_workshops', 'mentor_users'],
+                'admin': ['all']
+            };
+            return permissions[role] || permissions['gamer'];
+        }
+        
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            document.getElementById('successMessage').style.display = 'none';
+        }
+        
+        // Redirect if already logged in
+        const currentUser = JSON.parse(localStorage.getItem('user'));
+        if (currentUser) {
+            if (currentUser.role === 'admin') {
+                window.location.href = 'admin.html';
+            } else {
+                window.location.href = 'dashboard.html';
+            }
+        }
+    </script>
+</body>
+</html>

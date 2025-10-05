@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - GamePulse</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .dashboard-container {
+            padding: 100px 20px 50px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .welcome-section {
+            background: var(--bg-secondary);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            border: 1px solid #333;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .welcome-title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: var(--bg-secondary);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            border: 1px solid #333;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent-primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .continue-playing {
+            background: var(--bg-secondary);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            border: 1px solid #333;
+            margin-bottom: 2rem;
+        }
+        
+        .game-card {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--bg-primary);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .game-card:hover {
+            border-color: var(--accent-primary);
+            transform: translateX(5px);
+        }
+        
+        .game-cover {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            background: linear-gradient(45deg, #333, #555);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .game-info h4 {
+            margin-bottom: 0.25rem;
+        }
+        
+        .game-info p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin: 0;
+        }
+        
+        .recent-activity {
+            background: var(--bg-secondary);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            border: 1px solid #333;
+        }
+        
+        .activity-item {
+            padding: 1rem;
+            border-bottom: 1px solid #333;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--accent-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--bg-primary);
+            font-weight: bold;
+        }
+        
+        .friend-activity {
+            background: var(--bg-secondary);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            border: 1px solid #333;
+            margin-top: 2rem;
+        }
+        
+        .no-games {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo" data-glitch onclick="location.href='index.html'">GAMEPULSE</div>
+            <div class="nav-menu">
+                <a href="dashboard.html" class="nav-link active">Dashboard</a>
+                <a href="games.html" class="nav-link">My Games</a>
+                <a href="blogs.html" class="nav-link">Blogs</a>
+                <a href="profile.html" class="nav-link">Profile</a>
+                <!-- Dynamic links based on role -->
+                <span id="roleLinks"></span>
+            </div>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <!-- Welcome Section -->
+        <div class="welcome-section">
+            <h1 class="welcome-title">Welcome Back, <span id="userName">Player</span>! 🎮</h1>
+            <p>Here's your gaming pulse for today. Ready to continue your quest?</p>
+        </div>
+        
+        <!-- Quick Stats -->
+        <div class="quick-stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalGames">0</div>
+                <div>Total Games</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalPlaytime">0h</div>
+                <div>Total Playtime</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="completedGames">0</div>
+                <div>Completed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="backlogCount">0</div>
+                <div>In Backlog</div>
+            </div>
+        </div>
+        
+        <div class="dashboard-grid">
+            <!-- Left Column -->
+            <div>
+                <!-- Continue Playing -->
+                <div class="continue-playing">
+                    <h3>Continue Your Quest</h3>
+                    <div id="recentGames">
+                        <!-- Recent games will be populated here -->
+                        <div class="no-games">
+                            <p>No recent games. <a href="games.html" style="color: var(--accent-primary);">Add some games to your library!</a></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="continue-playing">
+                    <h3>Quick Actions</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+                        <button class="btn outline" onclick="location.href='games.html'">🎮 Add Game</button>
+                        <button class="btn outline" onclick="location.href='games.html?view=backlog'">📚 View Backlog</button>
+                        <button class="btn outline" onclick="rollRandomGame()">🎲 Random Game</button>
+                        <button class="btn outline" onclick="location.href='profile.html'">👤 My Profile</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Column -->
+            <div>
+                <!-- Recent Activity -->
+                <div class="recent-activity">
+                    <h3>Your Activity</h3>
+                    <div id="userActivity">
+                        <div class="activity-item">
+                            <div class="activity-icon">🎮</div>
+                            <div>
+                                <p><strong>Welcome to GamePulse!</strong></p>
+                                <small>Start tracking your games to see your activity here.</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Friend Activity -->
+                <div class="friend-activity">
+                    <h3>Friend Activity</h3>
+                    <div id="friendActivity">
+                        <p style="color: var(--text-secondary); text-align: center; padding: 2rem;">
+                            Connect with friends to see their gaming activity!
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="scripts/script.js"></script>
+    <script>
+        // Check authentication
+        const currentUser = JSON.parse(localStorage.getItem('user')) || JSON.parse(localStorage.getItem('demoUser'));
+        if (!currentUser) {
+            window.location.href = 'login.html';
+        }
+
+        // Initialize gaming data if not exists
+        function initializeGamingData() {
+            if (!localStorage.getItem('userGames')) {
+                localStorage.setItem('userGames', JSON.stringify([]));
+            }
+            if (!localStorage.getItem('gamingActivity')) {
+                localStorage.setItem('gamingActivity', JSON.stringify([]));
+            }
+            if (!localStorage.getItem('gameLibrary')) {
+                // Sample game database
+                const sampleGames = [
+                    { id: 1, title: "The Legend of Zelda: Tears of the Kingdom", platform: "Nintendo Switch", genre: "Adventure", cover: "🗡️" },
+                    { id: 2, title: "Baldur's Gate 3", platform: "PC", genre: "RPG", cover: "🐉" },
+                    { id: 3, title: "Cyberpunk 2077", platform: "Multiplatform", genre: "RPG", cover: "🔫" },
+                    { id: 4, title: "Minecraft", platform: "Multiplatform", genre: "Sandbox", cover: "⛏️" },
+                    { id: 5, title: "Roblox", platform: "Multiplatform", genre: "Social", cover: "🧱" }
+                ];
+                localStorage.setItem('gameLibrary', JSON.stringify(sampleGames));
+            }
+        }
+
+        function loadDashboard() {
+            document.getElementById('userName').textContent = currentUser.name;
+            
+            const userGames = JSON.parse(localStorage.getItem('userGames') || '[]');
+            const gamingActivity = JSON.parse(localStorage.getItem('gamingActivity') || '[]');
+            
+            // Update stats
+            document.getElementById('totalGames').textContent = userGames.length;
+            
+            const totalPlaytime = userGames.reduce((total, game) => total + (game.playtime || 0), 0);
+            document.getElementById('totalPlaytime').textContent = totalPlaytime + 'h';
+            
+            const completedGames = userGames.filter(game => game.status === 'completed').length;
+            document.getElementById('completedGames').textContent = completedGames;
+            
+            const backlogCount = userGames.filter(game => game.status === 'backlog').length;
+            document.getElementById('backlogCount').textContent = backlogCount;
+            
+            // Load recent games (last 3 played)
+            const recentGames = userGames
+                .filter(game => game.status === 'playing')
+                .slice(0, 3);
+            
+            const recentGamesContainer = document.getElementById('recentGames');
+            if (recentGames.length > 0) {
+                recentGamesContainer.innerHTML = recentGames.map(game => `
+                    <div class="game-card" onclick="viewGame(${game.id})">
+                        <div class="game-cover">${game.cover || '🎮'}</div>
+                        <div class="game-info">
+                            <h4>${game.title}</h4>
+                            <p>${game.platform} • ${game.playtime || 0}h played</p>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                recentGamesContainer.innerHTML = `
+                    <div class="no-games">
+                        <p>No recent games. <a href="games.html" style="color: var(--accent-primary);">Add some games to your library!</a></p>
+                    </div>
+                `;
+            }
+            
+            // Load user activity
+            const activityContainer = document.getElementById('userActivity');
+            if (gamingActivity.length > 0) {
+                activityContainer.innerHTML = gamingActivity.slice(0, 5).map(activity => `
+                    <div class="activity-item">
+                        <div class="activity-icon">${getActivityIcon(activity.type)}</div>
+                        <div>
+                            <p><strong>${activity.message}</strong></p>
+                            <small>${new Date(activity.timestamp).toLocaleDateString()}</small>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function getActivityIcon(type) {
+            const icons = {
+                'game_added': '➕',
+                'game_completed': '🏆',
+                'playtime_logged': '⏱️',
+                'achievement': '⭐'
+            };
+            return icons[type] || '🎮';
+        }
+
+        function viewGame(gameId) {
+            window.location.href = `game-details.html?id=${gameId}`;
+        }
+
+        function rollRandomGame() {
+            const userGames = JSON.parse(localStorage.getItem('userGames') || '[]');
+            const backlogGames = userGames.filter(game => game.status === 'backlog');
+            
+            if (backlogGames.length === 0) {
+                alert('No games in your backlog! Add some games first.');
+                return;
+            }
+            
+            const randomGame = backlogGames[Math.floor(Math.random() * backlogGames.length)];
+            alert(`🎲 How about playing: ${randomGame.title}?`);
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('user');
+                localStorage.removeItem('demoUser');
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Update navigation based on user role
+        function updateNavigation() {
+            const roleLinks = document.getElementById('roleLinks');
+            if (currentUser.role === 'admin' || currentUser.role === 'owner') {
+                roleLinks.innerHTML = '<a href="admin.html" class="nav-link">Admin</a>';
+            } else if (['content-creator', 'youth-mentor'].includes(currentUser.role)) {
+                roleLinks.innerHTML = '<a href="create-blog.html" class="nav-link">Create Blog</a>';
+            }
+        }
+
+        // Initialize and load dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeGamingData();
+            loadDashboard();
+            updateNavigation();
+        });
+    </script>
+</body>
+</html>
