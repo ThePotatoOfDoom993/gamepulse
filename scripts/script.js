@@ -1,4 +1,4 @@
-// scripts/script.js - COMPLETE UPDATED VERSION WITH SERVER SUPPORT
+// scripts/script.js - COMPLETE UPDATED VERSION WITH POSTGRESQL API
 
 // Main initialization function
 function initWebsite() {
@@ -10,11 +10,239 @@ function initWebsite() {
     setupButtonEffects();
     setupBlogNavigation();
     setupRoleBasedFeatures();
-    initializeGamingSystem();
-    initializeServer(); // NEW: Initialize server connection
     
     console.log('🚀 GamePulse website loaded successfully!');
 }
+
+// ==================== DATABASE API FUNCTIONS ====================
+
+const API_BASE = '';
+
+// User functions
+async function loginUser(email, password) {
+    try {
+        const response = await fetch('/api/users/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Login failed');
+        }
+        
+        const user = await response.json();
+        localStorage.setItem('user', JSON.stringify(user));
+        return user;
+    } catch (error) {
+        console.error('Login error:', error);
+        throw error;
+    }
+}
+
+async function registerUser(userData) {
+    try {
+        const response = await fetch('/api/users/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(userData)
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Registration failed');
+        }
+        
+        return await response.json();
+    } catch (error) {
+        console.error('Registration error:', error);
+        throw error;
+    }
+}
+
+// Game functions
+async function getUserGames(userId) {
+    try {
+        const response = await fetch(`/api/games?user_id=${userId}`);
+        if (!response.ok) throw new Error('Failed to fetch games');
+        return await response.json();
+    } catch (error) {
+        console.error('Get games error:', error);
+        return [];
+    }
+}
+
+async function addGameToLibrary(gameData) {
+    try {
+        const response = await fetch('/api/games', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(gameData)
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Failed to add game');
+        }
+        return await response.json();
+    } catch (error) {
+        console.error('Add game error:', error);
+        throw error;
+    }
+}
+
+async function updateGameStatus(gameId, status) {
+    try {
+        const response = await fetch(`/api/games/${gameId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status })
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Failed to update game');
+        }
+        return await response.json();
+    } catch (error) {
+        console.error('Update game error:', error);
+        throw error;
+    }
+}
+
+async function logGamePlaytime(gameId, hours, userId) {
+    try {
+        const response = await fetch(`/api/games/${gameId}/playtime`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ hours, user_id: userId })
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Failed to log playtime');
+        }
+        return await response.json();
+    } catch (error) {
+        console.error('Log playtime error:', error);
+        throw error;
+    }
+}
+
+async function deleteGameFromLibrary(gameId) {
+    try {
+        const response = await fetch(`/api/games/${gameId}`, {
+            method: 'DELETE'
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Failed to delete game');
+        }
+        return await response.json();
+    } catch (error) {
+        console.error('Delete game error:', error);
+        throw error;
+    }
+}
+
+// Blog functions
+async function getBlogPosts() {
+    try {
+        const response = await fetch('/api/blogs');
+        if (!response.ok) throw new Error('Failed to fetch blogs');
+        return await response.json();
+    } catch (error) {
+        console.error('Get blogs error:', error);
+        return [];
+    }
+}
+
+async function createBlogPost(blogData) {
+    try {
+        const response = await fetch('/api/blogs', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(blogData)
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Failed to create blog');
+        }
+        return await response.json();
+    } catch (error) {
+        console.error('Create blog error:', error);
+        throw error;
+    }
+}
+
+// Stats functions
+async function getUserStats(userId) {
+    try {
+        const response = await fetch(`/api/users/${userId}/stats`);
+        if (!response.ok) throw new Error('Failed to fetch stats');
+        return await response.json();
+    } catch (error) {
+        console.error('Get stats error:', error);
+        return {};
+    }
+}
+
+async function getUserActivity(userId) {
+    try {
+        const response = await fetch(`/api/activity/${userId}`);
+        if (!response.ok) throw new Error('Failed to fetch activity');
+        return await response.json();
+    } catch (error) {
+        console.error('Get activity error:', error);
+        return [];
+    }
+}
+
+// Enhanced gaming statistics
+async function getGamingStats(userId) {
+    try {
+        const stats = await getUserStats(userId);
+        const games = await getUserGames(userId);
+        
+        // Calculate favorite genre
+        const genreCount = {};
+        games.forEach(game => {
+            if (game.genre) {
+                genreCount[game.genre] = (genreCount[game.genre] || 0) + 1;
+            }
+        });
+        
+        const favoriteGenre = Object.keys(genreCount).reduce((a, b) => 
+            genreCount[a] > genreCount[b] ? a : b, 'None'
+        );
+        
+        return {
+            totalPlaytime: stats.totalPlaytime || 0,
+            totalGames: stats.totalGames || 0,
+            completedGames: stats.completedGames || 0,
+            playingGames: games.filter(game => game.status === 'playing').length,
+            backlogGames: games.filter(game => game.status === 'backlog').length,
+            favoriteGenre: favoriteGenre,
+            totalSessions: stats.totalSessions || 0
+        };
+    } catch (error) {
+        console.error('Get gaming stats error:', error);
+        return {
+            totalPlaytime: 0,
+            totalGames: 0,
+            completedGames: 0,
+            playingGames: 0,
+            backlogGames: 0,
+            favoriteGenre: 'None',
+            totalSessions: 0
+        };
+    }
+}
+
+// ==================== EXISTING WEBSITE FUNCTIONS ====================
 
 // Update navigation based on login status
 function updateNavigation() {
@@ -157,38 +385,6 @@ function setupButtonEffects() {
             }, 600);
         });
     });
-
-    // Blog navigation for index.html
-    const blogsBtn = document.getElementById('blogsBtn');
-    const readBlogsBtn = document.getElementById('readBlogsBtn');
-    const communityBtn = document.getElementById('communityBtn');
-
-    if (blogsBtn) {
-        blogsBtn.addEventListener('click', () => {
-            const blogsSection = document.getElementById('blogs');
-            if (blogsSection) {
-                blogsSection.scrollIntoView({ behavior: 'smooth' });
-            }
-        });
-    }
-
-    if (readBlogsBtn) {
-        readBlogsBtn.addEventListener('click', () => {
-            const blogsSection = document.getElementById('blogs');
-            if (blogsSection) {
-                blogsSection.scrollIntoView({ behavior: 'smooth' });
-            }
-        });
-    }
-
-    if (communityBtn) {
-        communityBtn.addEventListener('click', () => {
-            const communitySection = document.getElementById('community');
-            if (communitySection) {
-                communitySection.scrollIntoView({ behavior: 'smooth' });
-            }
-        });
-    }
 }
 
 // Blog navigation setup
@@ -202,22 +398,6 @@ function setupBlogNavigation() {
                 if (targetElement) {
                     targetElement.scrollIntoView({ behavior: 'smooth' });
                 }
-            }
-        });
-    });
-
-    // Blog preview card navigation
-    document.querySelectorAll('.blog-preview').forEach(card => {
-        card.addEventListener('click', function() {
-            if (window.location.pathname.includes('blogs.html')) {
-                const index = Array.from(this.parentNode.children).indexOf(this);
-                const blogIds = ['roblox-good', 'roblox-bad', 'parent-guide'];
-                const targetElement = document.getElementById(blogIds[index]);
-                if (targetElement) {
-                    targetElement.scrollIntoView({ behavior: 'smooth' });
-                }
-            } else {
-                window.location.href = 'blogs.html';
             }
         });
     });
@@ -245,381 +425,6 @@ function addCreateBlogButton() {
         navMenu.appendChild(createBlogLink);
     }
 }
-
-// GAMING SYSTEM FUNCTIONS
-
-// Initialize gaming system
-function initializeGamingSystem() {
-    initializeGamingData();
-    initializePWA();
-}
-
-// PWA initialization
-function initializePWA() {
-    // Check if we're running as PWA
-    if (window.gamePulsePWA && window.gamePulsePWA.isRunningAsPWA()) {
-        console.log('Running as PWA - enabling enhanced features');
-        enablePWAFeatures();
-    }
-}
-
-function enablePWAFeatures() {
-    // Add PWA-specific features here
-    // For now, we'll just log it
-    console.log('PWA features enabled');
-    
-    // You could add automatic tracking capabilities here
-    // like background sync, push notifications, etc.
-}
-
-// Initialize gaming data
-function initializeGamingData() {
-    if (!localStorage.getItem('userGames')) {
-        localStorage.setItem('userGames', JSON.stringify([]));
-    }
-    if (!localStorage.getItem('gamingActivity')) {
-        localStorage.setItem('gamingActivity', JSON.stringify([]));
-    }
-    if (!localStorage.getItem('gameLibrary')) {
-        // Sample game database
-        const sampleGames = [
-            { id: 1, title: "The Legend of Zelda: Tears of the Kingdom", platform: "Nintendo Switch", genre: "Adventure", cover: "🗡️" },
-            { id: 2, title: "Baldur's Gate 3", platform: "PC", genre: "RPG", cover: "🐉" },
-            { id: 3, title: "Cyberpunk 2077", platform: "Multiplatform", genre: "RPG", cover: "🔫" },
-            { id: 4, title: "Minecraft", platform: "Multiplatform", genre: "Sandbox", cover: "⛏️" },
-            { id: 5, title: "Roblox", platform: "Multiplatform", genre: "Social", cover: "🧱" },
-            { id: 6, title: "Fortnite", platform: "Multiplatform", genre: "Battle Royale", cover: "💥" },
-            { id: 7, title: "Elden Ring", platform: "Multiplatform", genre: "RPG", cover: "👑" },
-            { id: 8, title: "Grand Theft Auto V", platform: "Multiplatform", genre: "Action", cover: "🚗" }
-        ];
-        localStorage.setItem('gameLibrary', JSON.stringify(sampleGames));
-    }
-}
-
-// Enhanced gaming statistics
-function getGamingStats() {
-    const userGames = JSON.parse(localStorage.getItem('userGames') || '[]');
-    const gamingActivity = JSON.parse(localStorage.getItem('gamingActivity') || '[]');
-    
-    const totalPlaytime = userGames.reduce((total, game) => total + (game.playtime || 0), 0);
-    const completedGames = userGames.filter(game => game.status === 'completed').length;
-    const playingGames = userGames.filter(game => game.status === 'playing').length;
-    const backlogGames = userGames.filter(game => game.status === 'backlog').length;
-    
-    // Calculate favorite genre
-    const genreCount = {};
-    userGames.forEach(game => {
-        genreCount[game.genre] = (genreCount[game.genre] || 0) + 1;
-    });
-    const favoriteGenre = Object.keys(genreCount).reduce((a, b) => 
-        genreCount[a] > genreCount[b] ? a : b, 'None'
-    );
-    
-    return {
-        totalPlaytime,
-        totalGames: userGames.length,
-        completedGames,
-        playingGames,
-        backlogGames,
-        favoriteGenre,
-        totalSessions: userGames.reduce((total, game) => 
-            total + (game.sessions ? game.sessions.length : 0), 0),
-        recentActivity: gamingActivity.slice(0, 10)
-    };
-}
-
-// Add gaming activity
-function addGamingActivity(type, message) {
-    const gamingActivity = JSON.parse(localStorage.getItem('gamingActivity') || '[]');
-    gamingActivity.unshift({
-        type: type,
-        message: message,
-        timestamp: new Date().toISOString()
-    });
-    // Keep only last 50 activities
-    localStorage.setItem('gamingActivity', JSON.stringify(gamingActivity.slice(0, 50)));
-}
-
-// Get user's games with filtering and sorting
-function getUserGames(filter = 'all', sortBy = 'recent') {
-    const userGames = JSON.parse(localStorage.getItem('userGames') || '[]');
-    
-    // Filter games
-    let filteredGames = userGames;
-    if (filter !== 'all') {
-        filteredGames = userGames.filter(game => game.status === filter);
-    }
-    
-    // Sort games
-    filteredGames.sort((a, b) => {
-        switch (sortBy) {
-            case 'title':
-                return a.title.localeCompare(b.title);
-            case 'playtime':
-                return (b.playtime || 0) - (a.playtime || 0);
-            case 'recently-played':
-                return new Date(b.lastPlayed || 0) - new Date(a.lastPlayed || 0);
-            case 'recent':
-            default:
-                return new Date(b.addedDate || 0) - new Date(a.addedDate || 0);
-        }
-    });
-    
-    return filteredGames;
-}
-
-// Add game to user's library
-function addGameToLibrary(gameData) {
-    const userGames = JSON.parse(localStorage.getItem('userGames') || '[]');
-    
-    const newGame = {
-        id: Date.now(),
-        ...gameData,
-        status: 'backlog',
-        playtime: 0,
-        sessions: [],
-        addedDate: new Date().toISOString(),
-        lastPlayed: null,
-        notes: ''
-    };
-    
-    userGames.push(newGame);
-    localStorage.setItem('userGames', JSON.stringify(userGames));
-    
-    // Add activity
-    addGamingActivity('game_added', `Added ${gameData.title} to library`);
-    
-    return newGame;
-}
-
-// Update game status
-function updateGameStatus(gameId, newStatus) {
-    const userGames = JSON.parse(localStorage.getItem('userGames') || '[]');
-    const gameIndex = userGames.findIndex(game => game.id === gameId);
-    
-    if (gameIndex !== -1) {
-        userGames[gameIndex].status = newStatus;
-        
-        if (newStatus === 'completed' && !userGames[gameIndex].completedDate) {
-            userGames[gameIndex].completedDate = new Date().toISOString();
-        }
-        
-        localStorage.setItem('userGames', JSON.stringify(userGames));
-        
-        // Add activity
-        addGamingActivity('game_updated', `Updated ${userGames[gameIndex].title} status to ${newStatus}`);
-        
-        return userGames[gameIndex];
-    }
-    return null;
-}
-
-// Log playtime for a game
-function logGamePlaytime(gameId, hours, sessionDate = new Date().toISOString()) {
-    const userGames = JSON.parse(localStorage.getItem('userGames') || '[]');
-    const gameIndex = userGames.findIndex(game => game.id === gameId);
-    
-    if (gameIndex !== -1) {
-        // Initialize sessions array if it doesn't exist
-        if (!userGames[gameIndex].sessions) {
-            userGames[gameIndex].sessions = [];
-        }
-        
-        // Add new session
-        const newSession = {
-            hours: hours,
-            date: sessionDate
-        };
-        
-        userGames[gameIndex].sessions.unshift(newSession);
-        userGames[gameIndex].playtime = (userGames[gameIndex].playtime || 0) + hours;
-        userGames[gameIndex].lastPlayed = new Date().toISOString();
-        
-        // Auto-update status to "playing" if it was in backlog
-        if (userGames[gameIndex].status === 'backlog') {
-            userGames[gameIndex].status = 'playing';
-        }
-        
-        localStorage.setItem('userGames', JSON.stringify(userGames));
-        
-        // Add activity
-        addGamingActivity('playtime_logged', `Logged ${hours}h of ${userGames[gameIndex].title}`);
-        
-        return userGames[gameIndex];
-    }
-    return null;
-}
-
-// Delete game from library
-function deleteGameFromLibrary(gameId) {
-    const userGames = JSON.parse(localStorage.getItem('userGames') || '[]');
-    const gameIndex = userGames.findIndex(game => game.id === gameId);
-    
-    if (gameIndex !== -1) {
-        const gameTitle = userGames[gameIndex].title;
-        userGames.splice(gameIndex, 1);
-        localStorage.setItem('userGames', JSON.stringify(userGames));
-        
-        // Add activity
-        addGamingActivity('game_removed', `Removed ${gameTitle} from library`);
-        
-        return true;
-    }
-    return false;
-}
-
-// Get game suggestions from library
-function getGameSuggestions(searchTerm = '') {
-    const gameLibrary = JSON.parse(localStorage.getItem('gameLibrary') || '[]');
-    const userGames = JSON.parse(localStorage.getItem('userGames') || '[]');
-    const userGameIds = userGames.map(game => game.libraryId).filter(id => id);
-    
-    // Filter out games already in user's library and apply search filter
-    return gameLibrary.filter(game => 
-        !userGameIds.includes(game.id) &&
-        game.title.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-}
-
-// Roll random game from backlog
-function getRandomBacklogGame() {
-    const userGames = JSON.parse(localStorage.getItem('userGames') || '[]');
-    const backlogGames = userGames.filter(game => game.status === 'backlog');
-    
-    if (backlogGames.length === 0) {
-        return null;
-    }
-    
-    return backlogGames[Math.floor(Math.random() * backlogGames.length)];
-}
-
-// ==================== SERVER API INTEGRATION ====================
-
-const API_BASE = window.location.origin + '/api';
-
-// Enhanced functions with server fallback
-async function syncWithServer() {
-    try {
-        // Sync local games to server
-        const localGames = JSON.parse(localStorage.getItem('userGames') || '[]');
-        for (const game of localGames) {
-            await fetch(`${API_BASE}/games`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    user_id: 1,
-                    title: game.title,
-                    platform: game.platform,
-                    genre: game.genre,
-                    cover: game.cover || '🎮'
-                })
-            });
-        }
-        console.log('✅ Data synced with server!');
-    } catch (error) {
-        console.log('🌐 Server unavailable, using local storage');
-    }
-}
-
-// Enhanced game adding with server support
-async function addGameToServer(gameData) {
-    try {
-        const response = await fetch(`${API_BASE}/games`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                user_id: 1,
-                ...gameData
-            })
-        });
-        
-        const serverGame = await response.json();
-        
-        // Keep local storage as backup
-        const localGames = JSON.parse(localStorage.getItem('userGames') || '[]');
-        localGames.push({ ...serverGame, localId: Date.now() });
-        localStorage.setItem('userGames', JSON.stringify(localGames));
-        
-        return serverGame;
-    } catch (error) {
-        // Fallback to local storage
-        console.log('📴 Server offline, using local storage');
-        return addGameToLibrary(gameData);
-    }
-}
-
-// Enhanced login with server support
-async function loginWithServer(email, password) {
-    try {
-        const response = await fetch(`${API_BASE}/users/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password })
-        });
-        
-        const user = await response.json();
-        localStorage.setItem('user', JSON.stringify(user));
-        return user;
-    } catch (error) {
-        // Fallback to local authentication
-        console.log('📴 Using local authentication');
-        return loginUser(email, password);
-    }
-}
-
-// Server status check
-async function checkServerStatus() {
-    try {
-        const response = await fetch(`${API_BASE}/users`);
-        return response.ok;
-    } catch (error) {
-        return false;
-    }
-}
-
-// Initialize server connection
-async function initializeServer() {
-    const isOnline = await checkServerStatus();
-    
-    if (isOnline) {
-        console.log('🌐 Connected to GamePulse Server');
-        await syncWithServer();
-        
-        // Show server status indicator
-        if (!document.getElementById('serverStatus')) {
-            const serverStatus = document.createElement('div');
-            serverStatus.id = 'serverStatus';
-            serverStatus.innerHTML = '🌐 Online';
-            serverStatus.style.cssText = `
-                position: fixed;
-                top: 10px;
-                right: 10px;
-                background: #00ff88;
-                color: #0a0a0a;
-                padding: 5px 10px;
-                border-radius: 4px;
-                font-size: 12px;
-                font-weight: bold;
-                z-index: 10000;
-            `;
-            document.body.appendChild(serverStatus);
-        }
-    } else {
-        console.log('📴 Running in offline mode');
-    }
-}
-
-// Update your existing login function to use server
-function enhancedLogin(email, password) {
-    return loginWithServer(email, password);
-}
-
-// Update your existing add game function
-function enhancedAddGame(gameData) {
-    return addGameToServer(gameData);
-}
-
-// UTILITY FUNCTIONS
 
 // Utility function to check if user can create blogs
 function canCreateBlogs(user) {
@@ -650,229 +455,65 @@ function formatRole(role) {
     return roles[role] || role;
 }
 
-// BLOG MANAGEMENT FUNCTIONS
-
-function initializeBlogSystem() {
-    // Initialize blog posts if they don't exist
-    if (!localStorage.getItem('blogPosts')) {
-        const sampleBlogs = [
-            {
-                id: 1,
-                title: "The Bright Side: How Roblox Empowers Young Minds",
-                category: "education",
-                content: "Roblox isn't just a game - it's a creation platform. With Roblox Studio, kids learn 3D modeling, basic coding with Lua scripting, and game design principles...",
-                tags: ["education", "creativity", "coding"],
-                authorId: "system",
-                authorName: "Alex Chen",
-                authorRole: "content-creator",
-                status: "approved",
-                createdAt: new Date('2024-01-15').toISOString(),
-                views: 1250,
-                likes: 89,
-                comments: []
-            },
-            {
-                id: 2,
-                title: "Understanding the Concerns: Roblox Safety Guide",
-                category: "safety",
-                content: "While Roblox has many benefits, parents should be aware of privacy concerns, screen time management, and the importance of parental controls...",
-                tags: ["safety", "parenting", "online-safety"],
-                authorId: "system",
-                authorName: "Maria Gonzalez",
-                authorRole: "content-creator",
-                status: "approved",
-                createdAt: new Date('2024-01-12').toISOString(),
-                views: 980,
-                likes: 67,
-                comments: []
-            },
-            {
-                id: 3,
-                title: "The Ultimate Parent's Guide to Roblox",
-                category: "parenting",
-                content: "The best approach? Play together! Ask your child to teach you their favorite game, discuss the games they play, and set clear rules together...",
-                tags: ["parenting", "guide", "family-gaming"],
-                authorId: "system",
-                authorName: "Dr. Sarah Johnson",
-                authorRole: "youth-mentor",
-                status: "approved",
-                createdAt: new Date('2024-01-10').toISOString(),
-                views: 1560,
-                likes: 112,
-                comments: []
-            }
-        ];
-        localStorage.setItem('blogPosts', JSON.stringify(sampleBlogs));
-    }
+// Get current user
+function getCurrentUser() {
+    return JSON.parse(localStorage.getItem('user'));
 }
 
-// Create new blog post
-function createBlogPost(blogData) {
-    const blogPosts = JSON.parse(localStorage.getItem('blogPosts') || '[]');
-    const newPost = {
-        id: Date.now(),
-        ...blogData,
-        status: 'approved', // Auto-approve for admins and owners
-        createdAt: new Date().toISOString(),
-        views: 0,
-        likes: 0,
-        comments: []
-    };
-    
-    blogPosts.push(newPost);
-    localStorage.setItem('blogPosts', JSON.stringify(blogPosts));
-    return newPost;
+// Check if user is logged in
+function isLoggedIn() {
+    return !!localStorage.getItem('user');
 }
 
-// Get user's blog posts
-function getUserBlogPosts(userId) {
-    const blogPosts = JSON.parse(localStorage.getItem('blogPosts') || '[]');
-    return blogPosts.filter(post => post.authorId === userId);
-}
-
-// Get all approved blog posts
-function getApprovedBlogPosts() {
-    const blogPosts = JSON.parse(localStorage.getItem('blogPosts') || '[]');
-    return blogPosts.filter(post => post.status === 'approved');
-}
-
-// Delete blog post
-function deleteBlogPost(postId, userId, userRole) {
-    const blogPosts = JSON.parse(localStorage.getItem('blogPosts') || '[]');
-    const postIndex = blogPosts.findIndex(post => post.id === postId);
-    
-    if (postIndex !== -1) {
-        const post = blogPosts[postIndex];
-        
-        // Check permissions: admins and owners can delete any post, users can only delete their own
-        if (userRole === 'admin' || userRole === 'owner' || post.authorId === userId) {
-            blogPosts.splice(postIndex, 1);
-            localStorage.setItem('blogPosts', JSON.stringify(blogPosts));
-            return true;
-        }
-    }
-    return false;
-}
-
-// USER MANAGEMENT FUNCTIONS
-
-function initializeUserSystem() {
-    if (!localStorage.getItem('users')) {
-        const ownerUser = {
-            id: 1,
-            name: "Website Owner",
-            email: "aterrealms@gmail.com",
-            password: "minecraftplayer961400",
-            role: "owner",
-            joinDate: new Date().toISOString(),
-            profile: {
-                bio: "Website Owner & Founder",
-                gamingInterests: ["All Games"],
-                avatar: "",
-                status: "active"
-            },
-            permissions: ['all', 'assign_roles', 'manage_owners', 'manage_users', 'manage_content', 'system_control']
-        };
-        
-        localStorage.setItem('users', JSON.stringify([ownerUser]));
-    }
-}
-
-// Authentication functions
-function loginUser(email, password) {
-    const users = JSON.parse(localStorage.getItem('users') || '[]');
-    
-    // Check owner credentials first
-    if (email === 'aterrealms@gmail.com' && password === 'minecraftplayer961400') {
-        const ownerUser = users.find(u => u.email === email) || {
-            id: 1,
-            name: "Website Owner",
-            email: email,
-            password: password,
-            role: "owner",
-            joinDate: new Date().toISOString(),
-            profile: {
-                bio: "Website Owner & Founder",
-                gamingInterests: ["All Games"],
-                avatar: "",
-                status: "active"
-            },
-            permissions: ['all', 'assign_roles', 'manage_owners', 'manage_users', 'manage_content', 'system_control']
-        };
-        
-        localStorage.setItem('user', JSON.stringify(ownerUser));
-        return ownerUser;
-    }
-    
-    // Check regular users
-    const user = users.find(u => u.email === email && u.password === password);
-    if (user) {
-        localStorage.setItem('user', JSON.stringify(user));
-        return user;
-    }
-    
-    return null;
-}
-
+// Logout user
 function logoutUser() {
     localStorage.removeItem('user');
     window.location.href = 'login.html';
 }
 
-function getCurrentUser() {
-    return JSON.parse(localStorage.getItem('user'));
-}
-
-function isLoggedIn() {
-    return !!localStorage.getItem('user');
+// Show notification
+function showNotification(message, type = 'info') {
+    // Simple notification system - you can enhance this
+    console.log(`[${type.toUpperCase()}] ${message}`);
+    if (typeof alert !== 'undefined') {
+        alert(message);
+    }
 }
 
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    initializeBlogSystem();
-    initializeUserSystem();
-    initializeGamingSystem();
     initWebsite();
 });
 
-// Export functions for use in other files and modules
+// Export functions for use in other files
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         // Core functions
         initWebsite,
         updateNavigation,
         
-        // Gaming system functions
-        initializeGamingSystem,
-        getGamingStats,
-        addGamingActivity,
+        // Database API functions
+        loginUser,
+        registerUser,
         getUserGames,
         addGameToLibrary,
         updateGameStatus,
         logGamePlaytime,
         deleteGameFromLibrary,
-        getGameSuggestions,
-        getRandomBacklogGame,
+        getBlogPosts,
+        createBlogPost,
+        getUserStats,
+        getGamingStats,
+        getUserActivity,
         
-        // Server functions
-        initializeServer,
-        enhancedLogin,
-        enhancedAddGame,
-        
-        // Blog functions
+        // Utility functions
         canCreateBlogs,
         getRolePermissions,
         formatRole,
-        createBlogPost,
-        getUserBlogPosts,
-        getApprovedBlogPosts,
-        deleteBlogPost,
-        
-        // User functions
-        loginUser,
-        logoutUser,
         getCurrentUser,
-        isLoggedIn
+        isLoggedIn,
+        logoutUser,
+        showNotification
     };
 }
 
@@ -881,42 +522,34 @@ window.GamePulse = {
     // Core
     init: initWebsite,
     
-    // Gaming
-    gaming: {
-        getStats: getGamingStats,
-        addActivity: addGamingActivity,
+    // Database API
+    api: {
+        login: loginUser,
+        register: registerUser,
         getGames: getUserGames,
         addGame: addGameToLibrary,
-        updateStatus: updateGameStatus,
+        updateGame: updateGameStatus,
         logPlaytime: logGamePlaytime,
         deleteGame: deleteGameFromLibrary,
-        getSuggestions: getGameSuggestions,
-        randomBacklog: getRandomBacklogGame
-    },
-    
-    // Server
-    server: {
-        initialize: initializeServer,
-        login: enhancedLogin,
-        addGame: enhancedAddGame
-    },
-    
-    // Blogs
-    blogs: {
-        canCreate: canCreateBlogs,
-        create: createBlogPost,
-        getUserPosts: getUserBlogPosts,
-        getApproved: getApprovedBlogPosts,
-        delete: deleteBlogPost
+        getBlogs: getBlogPosts,
+        createBlog: createBlogPost,
+        getStats: getUserStats,
+        getGamingStats: getGamingStats,
+        getActivity: getUserActivity
     },
     
     // Users
     users: {
-        login: loginUser,
-        logout: logoutUser,
         current: getCurrentUser,
         isLoggedIn: isLoggedIn,
+        logout: logoutUser,
         getPermissions: getRolePermissions,
-        formatRole: formatRole
+        formatRole: formatRole,
+        canCreateBlogs: canCreateBlogs
+    },
+    
+    // UI
+    ui: {
+        showNotification: showNotification
     }
 };
