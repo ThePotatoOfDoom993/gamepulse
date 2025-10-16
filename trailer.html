@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GamePulse - The Ultimate Gaming Companion</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a0a0a;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            cursor: none;
+        }
+
+        .custom-cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            background: #00ff88;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 10000;
+            mix-blend-mode: difference;
+            transition: transform 0.1s ease;
+        }
+
+        .cursor-trail {
+            position: fixed;
+            width: 6px;
+            height: 6px;
+            background: #0088ff;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: difference;
+        }
+
+        /* Cinematic Sections */
+        .cinematic-section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.3;
+        }
+
+        .content-wrapper {
+            text-align: center;
+            max-width: 1200px;
+            padding: 2rem;
+            z-index: 2;
+        }
+
+        /* Typography */
+        .hero-title {
+            font-size: clamp(3rem, 8vw, 8rem);
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #00ff88, #0088ff, #ff0080, #ffaa00);
+            background-size: 400% 400%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 8s ease infinite;
+            line-height: 1.1;
+        }
+
+        .section-title {
+            font-size: clamp(2.5rem, 6vw, 5rem);
+            font-weight: 800;
+            margin-bottom: 2rem;
+            background: linear-gradient(45deg, #00ff88, #0088ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .feature-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #00ff88;
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            color: #b3b3b3;
+            margin-bottom: 2rem;
+            font-weight: 300;
+        }
+
+        /* Animations */
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(0, 255, 136, 0.5); }
+            50% { box-shadow: 0 0 40px rgba(0, 255, 136, 0.8), 0 0 60px rgba(0, 136, 255, 0.6); }
+        }
+
+        @keyframes slideInFromBottom {
+            from { transform: translateY(100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes typewriter {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        /* Specific Section Styles */
+        #hero {
+            background: radial-gradient(circle at center, #1a1a2e 0%, #0a0a0a 100%);
+        }
+
+        #dashboard-preview {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+        }
+
+        #game-tracking {
+            background: radial-gradient(circle at 80% 20%, #1a1a2e 0%, #0a0a0a 100%);
+        }
+
+        #community {
+            background: linear-gradient(45deg, #0a0a0a 0%, #16213e 100%);
+        }
+
+        #multi-platform {
+            background: radial-gradient(circle at 20% 80%, #1a1a2e 0%, #0a0a0a 100%);
+        }
+
+        #cta {
+            background: linear-gradient(135deg, #00ff88 0%, #0088ff 50%, #ff0080 100%);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            animation: slideInFromBottom 0.6s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px) scale(1.05);
+            border-color: #00ff88;
+            animation: glow 2s ease-in-out infinite;
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Mockup Screens */
+        .mockup-container {
+            position: relative;
+            margin: 3rem auto;
+            max-width: 800px;
+        }
+
+        .mockup-screen {
+            background: #1a1a1a;
+            border: 2px solid #333;
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 1rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            transform: perspective(1000px) rotateX(5deg);
+            transition: transform 0.3s ease;
+        }
+
+        .mockup-screen:hover {
+            transform: perspective(1000px) rotateX(0deg);
+        }
+
+        .screen-content {
+            background: #0a0a0a;
+            border-radius: 8px;
+            padding: 1.5rem;
+            min-height: 300px;
+        }
+
+        /* Stats Counter */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #00ff88;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #b3b3b3;
+            font-size: 1.1rem;
+        }
+
+        /* CTA Section */
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .cta-button {
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .cta-primary {
+            background: #00ff88;
+            color: #0a0a0a;
+        }
+
+        .cta-primary:hover {
+            background: #00cc6a;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 255, 136, 0.3);
+        }
+
+        .cta-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid #00ff88;
+        }
+
+        .cta-secondary:hover {
+            background: #00ff88;
+            color: #0a0a0a;
+            transform: translateY(-3px);
+        }
+
+        /* Particle Background */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            background: #00ff88;
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        /* Navigation Dots */
+        .nav-dots {
+            position: fixed;
+            right: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1000;
+        }
+
+        .nav-dot {
+            width: 12px;
+            height: 12px;
+            background: #333;
+            border-radius: 50%;
+            margin: 1rem 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-dot.active {
+            background: #00ff88;
+            transform: scale(1.5);
+        }
+
+        /* Scroll Progress */
+        .scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 3px;
+            background: linear-gradient(90deg, #00ff88, #0088ff);
+            z-index: 10000;
+            transition: width 0.1s ease;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 3rem;
+            }
+            
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .nav-dots {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Custom Cursor -->
+    <div class="custom-cursor"></div>
+
+    <!-- Scroll Progress -->
+    <div class="scroll-progress"></div>
+
+    <!-- Navigation Dots -->
+    <div class="nav-dots">
+        <div class="nav-dot active" data-section="hero"></div>
+        <div class="nav-dot" data-section="dashboard-preview"></div>
+        <div class="nav-dot" data-section="game-tracking"></div>
+        <div class="nav-dot" data-section="community"></div>
+        <div class="nav-dot" data-section="multi-platform"></div>
+        <div class="nav-dot" data-section="cta"></div>
+    </div>
+
+    <!-- Hero Section -->
+    <section id="hero" class="cinematic-section">
+        <div class="particles" id="heroParticles"></div>
+        <div class="content-wrapper">
+            <h1 class="hero-title">GAMEPULSE</h1>
+            <p class="subtitle">The Ultimate Gaming Companion</p>
+            <div class="cta-buttons">
+                <a href="index.html" class="cta-button cta-primary">🚀 Launch App</a>
+                <a href="#dashboard-preview" class="cta-button cta-secondary">🎬 Watch Trailer</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dashboard Preview -->
+    <section id="dashboard-preview" class="cinematic-section">
+        <div class="content-wrapper">
+            <h2 class="section-title">Your Gaming Headquarters</h2>
+            <p class="subtitle">Everything you need in one powerful dashboard</p>
+            
+            <div class="mockup-container">
+                <div class="mockup-screen">
+                    <div class="screen-content">
+                        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; height: 250px;">
+                            <!-- Stats Side -->
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                <div style="background: rgba(0, 255, 136, 0.1); padding: 1rem; border-radius: 8px; border: 1px solid #00ff88;">
+                                    <div style="font-size: 2rem; color: #00ff88; font-weight: bold;">24</div>
+                                    <div style="color: #b3b3b3;">Games Tracked</div>
+                                </div>
+                                <div style="background: rgba(0, 136, 255, 0.1); padding: 1rem; border-radius: 8px; border: 1px solid #0088ff;">
+                                    <div style="font-size: 2rem; color: #0088ff; font-weight: bold;">156h</div>
+                                    <div style="color: #b3b3b3;">Total Playtime</div>
+                                </div>
+                                <div style="background: rgba(255, 170, 0, 0.1); padding: 1rem; border-radius: 8px; border: 1px solid #ffaa00;">
+                                    <div style="font-size: 2rem; color: #ffaa00; font-weight: bold;">8</div>
+                                    <div style="color: #b3b3b3;">Completed</div>
+                                </div>
+                                <div style="background: rgba(255, 0, 128, 0.1); padding: 1rem; border-radius: 8px; border: 1px solid #ff0080;">
+                                    <div style="font-size: 2rem; color: #ff0080; font-weight: bold;">12</div>
+                                    <div style="color: #b3b3b3;">In Backlog</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Recent Activity -->
+                            <div style="background: rgba(255, 255, 255, 0.05); padding: 1rem; border-radius: 8px;">
+                                <h4 style="color: #00ff88; margin-bottom: 1rem;">Recent Activity</h4>
+                                <div style="color: #b3b3b3; font-size: 0.9rem;">
+                                    <div>🎮 Started playing Cyberpunk 2077</div>
+                                    <div>⏱️ Logged 2h in Baldur's Gate 3</div>
+                                    <div>🏆 Completed The Legend of Zelda</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3 class="feature-title">Smart Analytics</h3>
+                    <p>Track playtime, completion rates, and gaming habits with beautiful visualizations</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3 class="feature-title">Real-time Updates</h3>
+                    <p>See your stats update instantly as you play and track your sessions</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3 class="feature-title">Personalized Insights</h3>
+                    <p>Get recommendations based on your gaming preferences and history</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Game Tracking -->
+    <section id="game-tracking" class="cinematic-section">
+        <div class="content-wrapper">
+            <h2 class="section-title">Master Your Game Library</h2>
+            <p class="subtitle">Organize, track, and conquer your gaming backlog</p>
+
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number" data-target="5000">0</div>
+                    <div class="stat-label">Games in Database</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" data-target="15">0</div>
+                    <div class="stat-label">Supported Platforms</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" data-target="50">0</div>
+                    <div class="stat-label">Game Genres</div>
+                </div>
+            </div>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🎮</div>
+                    <h3 class="feature-title">Multi-Platform Support</h3>
+                    <p>Track games from PC, PlayStation, Xbox, Nintendo Switch, and more</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⏱️</div>
+                    <h3 class="feature-title">Playtime Tracking</h3>
+                    <p>Log your sessions and see exactly how much time you've invested</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🏆</div>
+                    <h3 class="feature-title">Achievement System</h3>
+                    <p>Unlock badges and milestones as you progress through your games</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Community Features -->
+    <section id="community" class="cinematic-section">
+        <div class="content-wrapper">
+            <h2 class="section-title">Join the Gaming Community</h2>
+            <p class="subtitle">Connect, share, and grow with fellow gamers</p>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📝</div>
+                    <h3 class="feature-title">Gaming Blogs</h3>
+                    <p>Write about your gaming experiences, reviews, and guides</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">👥</div>
+                    <h3 class="feature-title">Social Features</h3>
+                    <p>Follow friends, compare stats, and share your achievements</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💬</div>
+                    <h3 class="feature-title">Live Discussions</h3>
+                    <p>Join conversations about your favorite games and genres</p>
+                </div>
+            </div>
+
+            <div class="mockup-container">
+                <div class="mockup-screen">
+                    <div class="screen-content">
+                        <div style="text-align: left;">
+                            <h4 style="color: #00ff88; margin-bottom: 1rem;">Community Activity</h4>
+                            <div style="color: #b3b3b3;">
+                                <div style="padding: 0.5rem 0; border-bottom: 1px solid #333;">
+                                    <strong>Alex</strong> completed Elden Ring 🏆
+                                </div>
+                                <div style="padding: 0.5rem 0; border-bottom: 1px solid #333;">
+                                    <strong>Maria</strong> published a new blog: "The Art of Game Design" 📝
+                                </div>
+                                <div style="padding: 0.5rem 0; border-bottom: 1px solid #333;">
+                                    <strong>DemoUser</strong> is now playing Baldur's Gate 3 🎮
+                                </div>
+                                <div style="padding: 0.5rem 0;">
+                                    <strong>GamePulse Team</strong> released v2.1.0 update! 🚀
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Multi-Platform -->
+    <section id="multi-platform" class="cinematic-section">
+        <div class="content-wrapper">
+            <h2 class="section-title">Play Anywhere, Track Everywhere</h2>
+            <p class="subtitle">Your gaming data synchronized across all devices</p>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🌐</div>
+                    <h3 class="feature-title">Web App</h3>
+                    <p>Access from any browser with full PWA support</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📱</div>
+                    <h3 class="feature-title">Mobile Ready</h3>
+                    <p>Responsive design that works perfectly on phones and tablets</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💻</div>
+                    <h3 class="feature-title">Desktop Tracker</h3>
+                    <p>Automatic game tracking with our desktop application</p>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number" data-target="99">0</div>
+                    <div class="stat-label">Uptime %</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" data-target="256">0</div>
+                    <div class="stat-label">Bit Encryption</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" data-target="0">0</div>
+                    <div class="stat-label">Data Loss</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section id="cta" class="cinematic-section">
+        <div class="content-wrapper">
+            <h2 class="section-title" style="color: #0a0a0a; -webkit-text-fill-color: #0a0a0a;">Ready to Level Up?</h2>
+            <p class="subtitle" style="color: #0a0a0a; font-weight: 500;">Join thousands of gamers tracking their journey</p>
+            
+            <div class="cta-buttons">
+                <a href="register.html" class="cta-button" style="background: #0a0a0a; color: #00ff88;">🎮 Start Free Today</a>
+                <a href="changelog.html" class="cta-button" style="background: transparent; color: #0a0a0a; border: 2px solid #0a0a0a;">📚 See What's New</a>
+            </div>
+
+            <div class="feature-grid" style="margin-top: 3rem;">
+                <div class="feature-card" style="background: rgba(10, 10, 10, 0.9); color: white;">
+                    <div class="feature-icon">🚀</div>
+                    <h3 class="feature-title">Always Evolving</h3>
+                    <p>Regular updates with new features and improvements</p>
+                </div>
+                <div class="feature-card" style="background: rgba(10, 10, 10, 0.9); color: white;">
+                    <div class="feature-icon">🔒</div>
+                    <h3 class="feature-title">Secure & Private</h3>
+                    <p>Your data is protected with enterprise-grade security</p>
+                </div>
+                <div class="feature-card" style="background: rgba(10, 10, 10, 0.9); color: white;">
+                    <div class="feature-icon">❤️</div>
+                    <h3 class="feature-title">Built for Gamers</h3>
+                    <p>By gamers, for gamers. We understand your needs</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Custom Cursor
+        const cursor = document.querySelector('.custom-cursor');
+        const cursorTrails = [];
+
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+            
+            // Create trail effect
+            const trail = document.createElement('div');
+            trail.className = 'cursor-trail';
+            trail.style.left = e.clientX + 'px';
+            trail.style.top = e.clientY + 'px';
+            document.body.appendChild(trail);
+            
+            cursorTrails.push(trail);
+            if (cursorTrails.length > 10) {
+                const oldTrail = cursorTrails.shift();
+                if (oldTrail && oldTrail.parentNode) {
+                    oldTrail.parentNode.removeChild(oldTrail);
+                }
+            }
+            
+            // Remove trails after animation
+            setTimeout(() => {
+                if (trail.parentNode) {
+                    trail.parentNode.removeChild(trail);
+                }
+            }, 1000);
+        });
+
+        // Scroll Progress
+        const progressBar = document.querySelector('.scroll-progress');
+        window.addEventListener('scroll', () => {
+            const windowHeight = window.innerHeight;
+            const documentHeight = document.documentElement.scrollHeight - windowHeight;
+            const scrollTop = window.pageYOffset;
+            const progress = (scrollTop / documentHeight) * 100;
+            progressBar.style.width = progress + '%';
+        });
+
+        // Navigation Dots
+        const sections = document.querySelectorAll('.cinematic-section');
+        const dots = document.querySelectorAll('.nav-dot');
+
+        function updateActiveDot() {
+            const scrollY = window.pageYOffset;
+            
+            sections.forEach((section, index) => {
+                const sectionTop = section.offsetTop - 100;
+                const sectionBottom = sectionTop + section.offsetHeight;
+                
+                if (scrollY >= sectionTop && scrollY < sectionBottom) {
+                    dots.forEach(dot => dot.classList.remove('active'));
+                    dots[index].classList.add('active');
+                }
+            });
+        }
+
+        // Click on dots to scroll to sections
+        dots.forEach((dot, index) => {
+            dot.addEventListener('click', () => {
+                sections[index].scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+
+        window.addEventListener('scroll', updateActiveDot);
+
+        // Animate stats counters
+        function animateStats() {
+            const statNumbers = document.querySelectorAll('.stat-number');
+            
+            statNumbers.forEach(stat => {
+                const target = parseInt(stat.getAttribute('data-target'));
+                const duration = 2000;
+                const step = target / (duration / 16);
+                let current = 0;
+                
+                const timer = setInterval(() => {
+                    current += step;
+                    if (current >= target) {
+                        stat.textContent = target;
+                        clearInterval(timer);
+                    } else {
+                        stat.textContent = Math.floor(current);
+                    }
+                }, 16);
+            });
+        }
+
+        // Intersection Observer for animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animation = 'slideInFromBottom 0.6s ease forwards';
+                    
+                    // Animate stats when stats section is visible
+                    if (entry.target.id === 'game-tracking' || entry.target.id === 'multi-platform') {
+                        animateStats();
+                    }
+                }
+            });
+        }, { threshold: 0.3 });
+
+        document.querySelectorAll('.feature-card, .mockup-screen').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Particle Background
+        function createParticles() {
+            const container = document.getElementById('heroParticles');
+            const particleCount = 50;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                // Random properties
+                const size = Math.random() * 4 + 1;
+                const posX = Math.random() * 100;
+                const posY = Math.random() * 100;
+                const delay = Math.random() * 6;
+                const duration = Math.random() * 4 + 3;
+                
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                particle.style.left = posX + 'vw';
+                particle.style.top = posY + 'vh';
+                particle.style.animationDelay = delay + 's';
+                particle.style.animationDuration = duration + 's';
+                particle.style.opacity = Math.random() * 0.6 + 0.2;
+                
+                // Random color from gradient
+                const colors = ['#00ff88', '#0088ff', '#ff0080', '#ffaa00'];
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                
+                container.appendChild(particle);
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            createParticles();
+            updateActiveDot();
+        });
+
+        // Add some interactive effects
+        document.addEventListener('click', (e) => {
+            const ripple = document.createElement('div');
+            ripple.style.position = 'fixed';
+            ripple.style.borderRadius = '50%';
+            ripple.style.background = 'rgba(0, 255, 136, 0.3)';
+            ripple.style.transform = 'translate(-50%, -50%)';
+            ripple.style.pointerEvents = 'none';
+            ripple.style.left = e.clientX + 'px';
+            ripple.style.top = e.clientY + 'px';
+            ripple.style.width = '0px';
+            ripple.style.height = '0px';
+            
+            document.body.appendChild(ripple);
+            
+            // Animate ripple
+            setTimeout(() => {
+                ripple.style.transition = 'all 0.6s ease';
+                ripple.style.width = '100px';
+                ripple.style.height = '100px';
+                ripple.style.opacity = '0';
+            }, 10);
+            
+            // Remove ripple
+            setTimeout(() => {
+                if (ripple.parentNode) {
+                    ripple.parentNode.removeChild(ripple);
+                }
+            }, 600);
+        });
+    </script>
+</body>
+</html>
